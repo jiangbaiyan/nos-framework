@@ -19,7 +19,9 @@ class Validator
      * 请求参数校验入口方法
      * @param array $params
      * @param array $rules
+     * @return bool
      * @throws CoreException
+     * @throws ParamValidateFailedException
      */
     public static function make(array $params, array $rules)
     {
@@ -35,81 +37,71 @@ class Validator
                 if (!method_exists(__CLASS__, $item)){
                     throw new CoreException('validator|rule_not_defined|rule:' . $item);
                 }
-                @call_user_func([__CLASS__, $item], $params[$k]);
+                if (@call_user_func([__CLASS__, $item], $params[$k]) === false) {
+                    throw new ParamValidateFailedException("参数{$params[$k]}不符合校验规则{$item}");
+                };
             }
         }
+        return true;
     }
 
     /**
      * 手机号验证
      * @param $v
-     * @throws ParamValidateFailedException
+     * @return bool
      */
     private static function phone($v)
     {
-        if (strlen($v) != 11 || !preg_match('/^[1][3,4,5,7,8][0-9]{9}$/
-', $v)){
-            throw new ParamValidateFailedException();
-        }
+        return (strlen($v) == 11 && preg_match('/^[1][3,4,5,7,8][0-9]{9}$/', $v));
     }
 
     /**
      * 邮箱验证
      * @param $v
-     * @throws ParamValidateFailedException
+     * @return false|int
      */
     private static function email($v)
     {
-        if (!preg_match('/^[_\.0-9a-z-]+@([0-9a-z][0-9a-z-]+\.)+[a-z]{2,4}$/', $v)){
-            throw new ParamValidateFailedException();
-        }
+        return preg_match('/^[_\.0-9a-z-]+@([0-9a-z][0-9a-z-]+\.)+[a-z]{2,4}$/', $v);
     }
 
     /**
      * 身份证验证
      * @param $v
-     * @throws ParamValidateFailedException
+     * @return false|int
      */
     private static function idCard($v)
     {
-        if (!preg_match('/(^([\d]{15}|[\d]{18}|[\d]{17}x)$)/', $v)){
-            throw new ParamValidateFailedException();
-        }
+        return preg_match('/(^([\d]{15}|[\d]{18}|[\d]{17}x)$)/', $v);
     }
 
     /**
      * 必填验证
      * @param $v
-     * @throws ParamValidateFailedException
+     * @return bool
      */
     private static function required($v)
     {
-        if (!isset($v)){
-            throw new ParamValidateFailedException();
-        }
+        return isset($v);
     }
 
     /**
      * 判断日期时间格式是否合法
      * @param $v
-     * @throws ParamValidateFailedException
+     * @return bool
      */
     private static function dateTime($v)
     {
-        if (strtotime(date('Y-m-d H:i:s', strtotime($v))) != strtotime($v)){
-            throw new ParamValidateFailedException();
-        }
+        return strtotime(date('Y-m-d H:i:s', strtotime($v))) == strtotime($v);
     }
 
     /**
      * 判断日期格式是否合法
      * @param $v
-     * @throws ParamValidateFailedException
+     * @return bool
      */
     private static function date($v)
     {
-        if (strtotime(date('Y-m-d H:i:s', strtotime($v))) != strtotime($v)){
-            throw new ParamValidateFailedException();
-        }
+        return strtotime(date('Y-m-d H:i:s', strtotime($v))) == strtotime($v);
     }
 }
