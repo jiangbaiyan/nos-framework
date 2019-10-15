@@ -17,6 +17,7 @@
       "role": "Developer"
     }
   ],
+  "license": "MIT",
   "config": {
     "sort-packages": true
   },
