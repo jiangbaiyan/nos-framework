@@ -121,7 +121,7 @@ class Db
             }
             return self::$connPool[$connPoolKey];
         } catch (\Exception $e) {
-            throw new CoreException('db|connect_failed|msg:' . $e->getMessage());
+            throw new CoreException('db|connect_failed|msg:' . $e->getMessage() . '|config:' . json_encode($config));
         }
     }
 }
