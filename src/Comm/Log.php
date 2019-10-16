@@ -27,10 +27,15 @@ class Log
      */
     public static function write(string $level, string $msg)
     {
-        $fileName = date('Y-m-d') . '.log';//按天划分
-        $path = APP_PATH . '/logs/' . $fileName;
-        $time = date('Y-m-d H:i:s');
-        $str = '[' . $time . ']' . "[{$level}]". $msg . PHP_EOL;
+        $dir = APP_PATH . '/logs/';
+        // 判断目录是否存在，不存在则创建
+        if (!is_dir($dir)) {
+            mkdir($dir);
+        }
+        // 拼接日志完整路径
+        $path = $dir . date('Y-m-d') . '.log';
+        $str = '[' . date('Y-m-d H:i:s') . ']' . "[{$level}]". $msg . PHP_EOL;
+        // 写入文件
         $handle = fopen($path, 'a');
         flock($handle, LOCK_EX|LOCK_NB);
         fwrite($handle, $str);
