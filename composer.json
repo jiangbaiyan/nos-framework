@@ -28,9 +28,8 @@
     "ext-pdo": "*"
   },
   "autoload": {
-    "files": [],
     "psr-4": {
-      "nos\\": "src/"
+      "Nos\\": "src/"
     }
   },
   "minimum-stability": "dev",
