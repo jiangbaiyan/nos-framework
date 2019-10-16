@@ -54,11 +54,11 @@ class Mq
         try{
             $data = Redis::getInstance()->rPop($key);
             if (!empty($data)){
-                Log::notice('mq|mq_pop_succ|data:' . json_encode($data) . '|key:' . $key);
+                Log::notice('mq|mq_pop_success|data:' . json_encode($data) . '|key:' . $key);
                 return $data;
             }
         } catch (\Exception $e){
-            throw new CoreException('mq|rpop_failed|msg:' . json_encode($e->getMessage()) . '|key:' . $key);
+            throw new CoreException('mq|pop_mq_failed|msg:' . json_encode($e->getMessage()) . '|key:' . $key);
         }
         return false;
     }
