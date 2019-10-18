@@ -11,17 +11,12 @@ namespace Nos\Comm;
 
 use Nos\Exception\CoreException;
 use PDO;
-use Yaf\Config\Ini;
 
 class Db
 {
     const DB_NODE_MASTER_KEY = 'write'; //主库
     const DB_NODE_SLAVE_KEY  = 'read';  //从库
 
-    /**
-     * @var array $config 数据库配置
-     */
-    private static $config = [];
 
     /**
      * @var array $connPool 数据库连接池
@@ -104,12 +99,9 @@ class Db
              * ]
              *  若配置为空，需要重新加载
              */
-            if (empty(self::$config)) {
-                $config = new Ini(APP_PATH . '/config/db.ini', ini_get('yaf.environ'));
-                self::$config = $config->toArray();
-            }
+            $config = Config::get('db.ini');
             // 获取当前节点下的配置
-            $config = self::$config[$node];
+            $config = $config[$node];
             // PDO连接
             $dsn = "mysql:host={$config['host']};port={$config['port']};dbname={$config['database']}";
             // 这几个参数唯一确定连接池的key

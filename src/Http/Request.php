@@ -9,17 +9,13 @@
 
 namespace Nos\Http;
 
+use Nos\Comm\Config;
 use Nos\Comm\File;
 use Nos\Exception\CoreException;
 use Yaf\Config\Ini;
 
 class Request
 {
-    /**
-     * 请求协议
-     * @var static $schema
-     */
-    private static $schema = '';
 
     /**
      * 请求参数
@@ -131,12 +127,8 @@ class Request
     public static function getFullUrl()
     {
         // 缓存协议为空，需要重新从配置文件获取
-        if (empty(self::$schema)){
-            $config = new Ini(APP_PATH . '/config/application.ini', ini_get('yaf.environ'));
-            $config = $config->toArray();
-            self::$schema = $config['schema'];
-        }
-        return self::$schema . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+        $config = Config::get('application.ini');
+        return $config['schema'] . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
     }
 
     /**

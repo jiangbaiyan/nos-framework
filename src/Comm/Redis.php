@@ -9,7 +9,6 @@
 namespace Nos\Comm;
 
 use Nos\Exception\CoreException;
-use Yaf\Config\Ini;
 
 class Redis
 {
@@ -33,8 +32,7 @@ class Redis
             return self::$redis;
         } else { // 之前无redis实例，需要重新实例化
             // 读取redis配置
-            $configInstance = new Ini(APP_PATH . '/config/redis.ini', ini_get('yaf.environ'));
-            $config = $configInstance->toArray();
+            $config = Config::get('redis.ini');
             // 加载redis配置
             $host     = $config['host'];
             $port     = $config['port'];
