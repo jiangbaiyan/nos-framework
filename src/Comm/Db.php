@@ -99,7 +99,6 @@ class Db
              *     write => [],
              *     read => []
              * ]
-             *  若配置为空，需要重新加载
              */
             $config = Config::get('db.ini');
             // 获取当前节点下的配置
