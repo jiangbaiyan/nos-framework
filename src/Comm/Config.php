@@ -18,7 +18,7 @@ class Config
      * value为配置数据
      * @var array 配置池
      */
-    public static $configPool = [];
+    private static $configPool = [];
 
     /**
      * 获取配置
