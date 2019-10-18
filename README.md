@@ -75,7 +75,7 @@ class TestModel extends \BaseModel {
     /*
      * 表名
      */
-    public $table = 'test';
+    public static $table = 'test';
 
     /**
      * 模型层查询示例
