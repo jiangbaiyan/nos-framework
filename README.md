@@ -117,3 +117,18 @@ class TestModel extends \BaseModel {
 ## 依赖引入
  - 如果需要引入库，请直接编辑composer.json并添加需要的库
  - 然后执行composer install/update即可
+## 内置验证
+ - required：必填
+ - phone：手机号
+ - email：邮箱地址
+ - idCard：身份证
+ - date：年月日2019-10-18
+ - dateTime：时分秒17:45:16
+ - integer：数字整数
+ - numeric：能够转换成数字
+ - float：单精度浮点
+ - double：双精度浮点
+ - array：数组
+ - string：字符串
+ - bool：布尔值
+ - null：null值
