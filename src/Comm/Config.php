@@ -14,8 +14,9 @@ use Yaf\Config\Ini;
 class Config
 {
     /**
-     * 配置池
-     * @var array
+     * key为文件路径
+     * value为配置数据
+     * @var array 配置池
      */
     public static $configPool = [];
 

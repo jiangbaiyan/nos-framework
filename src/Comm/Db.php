@@ -19,6 +19,8 @@ class Db
 
 
     /**
+     * key为可唯一确定数据库连接的配置信息
+     * value为数据库连接实例
      * @var array $connPool 数据库连接池
      */
     private static $connPool = [];
