@@ -131,11 +131,11 @@ class TestModel extends \BaseModel {
  - array：数组类型
  - string：字符串类型
  - bool：布尔类型
- - minNum：数值最小值，如minNum:2
- - maxNum：数值最大值，如maxNum:3
- - minLen：字符串长度最小值，如minLen:2
- - maxLen：字符串长度最大值，如maxLen:3
- - betweenNum：数值在两个值之间，如betWeenNum:1，5
- - betweenLen：字符串长度在两个值之间，如betweenLen:2，4
- - in：是否在给定枚举值之内，如in:jiangbaiyan,grape
- - exist：是否包含某个子串，如exist:baiyan
+ - minNum：数值最小值。如minNum:2
+ - maxNum：数值最大值。如maxNum:3
+ - minLen：字符串长度最小值。如minLen:2
+ - maxLen：字符串长度最大值。如maxLen:3
+ - betweenNum：数值在两个值之间。如betWeenNum:1,5
+ - betweenLen：字符串长度在两个值之间。如betweenLen:2,4
+ - in：是否在给定枚举值之内。如in:jiangbaiyan,grape
+ - exist：是否包含某个子串。如exist:baiyan
