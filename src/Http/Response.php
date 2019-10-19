@@ -20,9 +20,9 @@ class Response
     /**
      * @var string 失败状态码
      */
-    const CODE_PARAM_ERROR       = 400; // 未授权
+    const CODE_PARAM_ERROR        = 400; // 参数校验失败
 
-    const CODE_UNAUTHORIZED       = 401; // 未授权（未登录）
+    const CODE_UNAUTHORIZED       = 401; // 用户未授权
 
     const CODE_OPERATE_FAILED     = 402; // 操作失败
 
@@ -37,17 +37,17 @@ class Response
      */
     const MSG_SUCCESS            = 'success';
 
-    const MSG_OPERATE_FAILED     = '操作失败';
+    const MSG_OPERATE_FAILED     = 'operate_failed';
 
-    const MSG_RESOURCE_NOT_FOUND = '请求资源未找到';
+    const MSG_RESOURCE_NOT_FOUND = 'resource_not_found';
 
-    const MSG_PARAM_ERROR        = '参数缺失或参数错误';
+    const MSG_PARAM_ERROR        = 'param_error';
 
-    const MSG_UNAUTHORIZED       = '您还未拥有授权,请重新登录';
+    const MSG_UNAUTHORIZED       = 'unauthorized';
 
-    const MSG_PERMISSION_DENIED  = '您没有该操作的权限';
+    const MSG_PERMISSION_DENIED  = 'permission_denied';
 
-    const MSG_CORE_ERROR         = '框架底层错误';
+    const MSG_CORE_ERROR         = 'core_error';
 
 
     /**

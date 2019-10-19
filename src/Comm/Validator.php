@@ -25,26 +25,26 @@ class Validator
      */
     public static function make(array $params, array $rules)
     {
-        foreach ($rules as $k => $v) {
-            if (!isset($params[$k]) && strpos($v, 'required') === false) {
+        foreach ($rules as $field => $rule) {
+            if (!isset($params[$field]) && strpos($rule, 'required') === false) {
                 continue;
             }
-            $arr = explode('|', $v);
-            foreach ($arr as $item) {
+            $ruleArr = explode('|', $rule);
+            foreach ($ruleArr as $ruleItem) {
                 // 验证规则为空，进行下一条验证
-                if (empty($item)) {
+                if (empty($ruleItem)) {
                     continue;
                 }
                 // 如果在本类定义了内置验证方法，直接调用。如果没定义，那么继续尝试is_int/is_numeric等PHP内置方法，否则报错
-                if (method_exists(__CLASS__, $item)) {
-                    $ret = call_user_func([__CLASS__, $item], $params[$k]);
-                } else if (function_exists("is_{$item}")) {
-                    $ret = call_user_func("is_{$item}", $params[$k]);
+                if (method_exists(__CLASS__, $ruleItem)) {
+                    $ret = call_user_func([__CLASS__, $ruleItem], $params[$field]);
+                } else if (function_exists("is_{$ruleItem}")) {
+                    $ret = call_user_func("is_{$ruleItem}", $params[$field]);
                 } else {
-                    throw new CoreException("validator|rule_undefined|rule:{$item}");
+                    throw new CoreException("validator|rule_undefined|rule:{$ruleItem}");
                 }
                 if ($ret === false) {
-                    throw new ParamValidateFailedException("参数{$params[$k]}不符合校验规则{$item}");
+                    throw new ParamValidateFailedException("参数{$params[$field]}不符合校验规则{$ruleItem}");
                 }
             }
         }
