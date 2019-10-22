@@ -76,7 +76,7 @@ class Response
      */
     public static function apiSuccess($data = [] , string $msg = '')
     {
-        self::apiResponse(self::CODE_SUCCESS,$msg ? $msg :self::MSG_SUCCESS,$data);
+        self::apiResponse(self::CODE_SUCCESS,$msg ? $msg : self::MSG_SUCCESS,$data);
     }
 
     /**
@@ -96,7 +96,7 @@ class Response
      */
     public static function apiParamValidateFailed(string $msg = '')
     {
-        self::apiResponse(self::CODE_PARAM_ERROR,$msg ? $msg :self::MSG_PARAM_ERROR);
+        self::apiResponse(self::CODE_PARAM_ERROR,$msg ? $msg : self::MSG_PARAM_ERROR);
     }
 
     /**
@@ -106,7 +106,7 @@ class Response
      */
     public static function apiOperateFailed(string $msg = '')
     {
-        self::apiResponse(self::CODE_OPERATE_FAILED,$msg ? $msg :self::MSG_OPERATE_FAILED);
+        self::apiResponse(self::CODE_OPERATE_FAILED,$msg ? $msg : self::MSG_OPERATE_FAILED);
     }
 
     /**
@@ -116,7 +116,7 @@ class Response
      */
     public static function apiUnauthorized(string $msg = '')
     {
-        self::apiResponse(self::CODE_UNAUTHORIZED,$msg ? $msg :self::MSG_UNAUTHORIZED);
+        self::apiResponse(self::CODE_UNAUTHORIZED,$msg ? $msg : self::MSG_UNAUTHORIZED);
     }
 
     /**
@@ -126,7 +126,17 @@ class Response
      */
     public static function apiPermissionDenied(string $msg = '')
     {
-        self::apiResponse(self::CODE_PERMISSION_DENIED,$msg ? $msg :self::MSG_PERMISSION_DENIED);
+        self::apiResponse(self::CODE_PERMISSION_DENIED,$msg ? $msg : self::MSG_PERMISSION_DENIED);
+    }
+
+    /**
+     * 框架底层异常
+     * @param string $msg
+     * @return string
+     */
+    public static function apiCoreError(string $msg = '')
+    {
+        self::apiResponse(self::CODE_CORE_ERROR, $msg ? $msg : self::MSG_CORE_ERROR);
     }
 
 }
