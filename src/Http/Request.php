@@ -12,7 +12,6 @@ namespace Nos\Http;
 use Nos\Comm\Config;
 use Nos\Comm\File;
 use Nos\Exception\CoreException;
-use Yaf\Config\Ini;
 
 class Request
 {
@@ -149,7 +148,7 @@ class Request
      * @return bool|string
      * @throws CoreException
      */
-    public static function send(string $reqType, string $url, array $params = [], int $paramsType = self::REQUEST_TYPE_URLENCODED,  array $options = [], int $retry = 3, int $timeout = 20)
+    public static function send(string $reqType, string $url, array $params = [], int $paramsType = self::PARAMS_TYPE_URLENCODED,  array $options = [], int $retry = 3, int $timeout = 20)
     {
         if (empty($reqType) || empty($url)) {
             return false;
