@@ -26,6 +26,19 @@ server {
   }
 }
 ```
+## 集成工具类
+ - composer
+ - 数据库操作类
+ - 配置类
+ - 文件操作类
+ - 日志处理类
+ - 队列操作类
+ - 分页操作类
+ - Redis操作类
+ - 表单验证器类
+ - 异常处理类
+ - 请求类
+ - 响应类
 ## Controller层使用
 ### 命名规范
  - 路由：http://localhost/article/query
@@ -94,10 +107,10 @@ class TestModel extends \BaseModel {
         ];
         // 附加选项
         $option = [
-             'id'  => 'asc'
-        ];       
+            'id'  => 'asc'
+        ];
         // 更新操作
-        $row = self::update($params,$wheres);
+        $row = self::update($params, $wheres);
         // 查询操作
         $data = self::select(['id','name'], $wheres, $option);
         // 返回数据
