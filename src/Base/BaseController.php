@@ -1,5 +1,7 @@
 <?php
 
+namespace Nos\Base;
+
 use Yaf\Controller_Abstract;
 
 abstract class BaseController extends Controller_Abstract

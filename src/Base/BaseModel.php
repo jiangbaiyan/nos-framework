@@ -7,6 +7,8 @@
  * Time: 08:35
  */
 
+namespace Nos\Base;
+
 use Nos\Comm\Db;
 use Nos\Comm\Page;
 use Nos\Exception\CoreException;
