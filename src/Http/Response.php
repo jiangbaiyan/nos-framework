@@ -20,9 +20,9 @@ class Response
     /**
      * @var string 失败状态码
      */
-    const CODE_PARAM_ERROR       = 400; // 未授权
+    const CODE_PARAM_ERROR        = 400; // 参数校验失败
 
-    const CODE_UNAUTHORIZED       = 401; // 未授权（未登录）
+    const CODE_UNAUTHORIZED       = 401; // 用户未授权
 
     const CODE_OPERATE_FAILED     = 402; // 操作失败
 
@@ -37,17 +37,17 @@ class Response
      */
     const MSG_SUCCESS            = 'success';
 
-    const MSG_OPERATE_FAILED     = '操作失败';
+    const MSG_OPERATE_FAILED     = 'operate_failed';
 
-    const MSG_RESOURCE_NOT_FOUND = '请求资源未找到';
+    const MSG_RESOURCE_NOT_FOUND = 'resource_not_found';
 
-    const MSG_PARAM_ERROR        = '参数缺失或参数错误';
+    const MSG_PARAM_ERROR        = 'param_error';
 
-    const MSG_UNAUTHORIZED       = '您还未拥有授权,请重新登录';
+    const MSG_UNAUTHORIZED       = 'unauthorized';
 
-    const MSG_PERMISSION_DENIED  = '您没有该操作的权限';
+    const MSG_PERMISSION_DENIED  = 'permission_denied';
 
-    const MSG_CORE_ERROR         = '框架底层错误';
+    const MSG_CORE_ERROR         = 'core_error';
 
 
     /**
@@ -76,7 +76,7 @@ class Response
      */
     public static function apiSuccess($data = [] , string $msg = '')
     {
-        self::apiResponse(self::CODE_SUCCESS,$msg ? $msg :self::MSG_SUCCESS,$data);
+        self::apiResponse(self::CODE_SUCCESS,$msg ? $msg : self::MSG_SUCCESS,$data);
     }
 
     /**
@@ -96,7 +96,7 @@ class Response
      */
     public static function apiParamValidateFailed(string $msg = '')
     {
-        self::apiResponse(self::CODE_PARAM_ERROR,$msg ? $msg :self::MSG_PARAM_ERROR);
+        self::apiResponse(self::CODE_PARAM_ERROR,$msg ? $msg : self::MSG_PARAM_ERROR);
     }
 
     /**
@@ -106,7 +106,7 @@ class Response
      */
     public static function apiOperateFailed(string $msg = '')
     {
-        self::apiResponse(self::CODE_OPERATE_FAILED,$msg ? $msg :self::MSG_OPERATE_FAILED);
+        self::apiResponse(self::CODE_OPERATE_FAILED,$msg ? $msg : self::MSG_OPERATE_FAILED);
     }
 
     /**
@@ -116,7 +116,7 @@ class Response
      */
     public static function apiUnauthorized(string $msg = '')
     {
-        self::apiResponse(self::CODE_UNAUTHORIZED,$msg ? $msg :self::MSG_UNAUTHORIZED);
+        self::apiResponse(self::CODE_UNAUTHORIZED,$msg ? $msg : self::MSG_UNAUTHORIZED);
     }
 
     /**
@@ -126,7 +126,17 @@ class Response
      */
     public static function apiPermissionDenied(string $msg = '')
     {
-        self::apiResponse(self::CODE_PERMISSION_DENIED,$msg ? $msg :self::MSG_PERMISSION_DENIED);
+        self::apiResponse(self::CODE_PERMISSION_DENIED,$msg ? $msg : self::MSG_PERMISSION_DENIED);
+    }
+
+    /**
+     * 框架底层异常
+     * @param string $msg
+     * @return string
+     */
+    public static function apiCoreError(string $msg = '')
+    {
+        self::apiResponse(self::CODE_CORE_ERROR, $msg ? $msg : self::MSG_CORE_ERROR);
     }
 
 }

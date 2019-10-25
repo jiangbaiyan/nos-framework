@@ -14,23 +14,17 @@ use Yaf\Config\Ini;
 class Config
 {
     /**
-     * key为文件路径
-     * value为配置数据
-     * @var array 配置池
-     */
-    private static $configPool = [];
-
-    /**
      * 获取配置
      * @param string $path 如db.ini
      * @return mixed
      */
     public static function get(string $path) {
-        // 如果配置池中没有当前路径下的配置，需要重新获取
-        if (!isset(self::$configPool[$path])) {
+        // 如果配置池中没有当前路径下的配置，需要重新获取，否则直接拿来用
+        $poolData = Pool::get($path);
+        if (empty($poolData)) {
             $config = new Ini(APP_PATH . "/config/{$path}", ini_get('yaf.environ'));
-            self::$configPool[$path] = $config->toArray();
+            $poolData = Pool::set($path, $config->toArray());
         }
-        return self::$configPool[$path];
+        return $poolData;
     }
 }

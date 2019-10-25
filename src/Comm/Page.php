@@ -14,7 +14,7 @@ use Nos\Http\Request;
 class Page
 {
     /**
-     * 生成分页数据
+     * 生成分页URL数据
      * @param int $count
      * @param int $curPage
      * @param int $pageSize
@@ -55,48 +55,28 @@ class Page
     }
 
     /**
-     * 获取分页查询偏移量
-     * @param int $curPage
-     * @param int $pageSize
-     * @return float|int
-     */
-    public static function getLimitData(int $curPage, int $pageSize)
-    {
-        $offset = empty($curPage) ? 0 : ($curPage - 1) * $pageSize;
-        return $offset;
-    }
-
-    /**
      * 获取分页参数
-     * @param int $page
-     * @param int $pageSize
-     * @param bool $asString
+     * @param int $page 当前页码
+     * @param int $pageSize 每页条数
+     * @param bool $asString 是否以SQL字符串形式返回
      * @return array|string
      */
     public static function getPaging(int $page, int $pageSize, bool $asString = true)
     {
-        $data           = [];
         if($page < 1){
             $page = 1;
         }
-        $data['offset'] = ($page - 1) * $pageSize;
-        $data['rows']   = $pageSize;
-        if ($asString) {
-            return ' limit ' . implode(',', $data) . ' ';
+        if ($pageSize < 1) {
+            $pageSize = 10;
         }
-        return $data;
+        $offset = ($page - 1) * $pageSize;
+        if ($asString) {
+            return " limit {$offset}, {$pageSize} ";
+        }
+        return [
+            'offset' => $offset,
+            'rows'   => $pageSize
+        ];
     }
 
-    /**
-     * 获取分页字符串表示
-     * @param array $pageInfo 如: ['page' => 1, 'page_size' => 10]
-     * @return array|string
-     */
-    public static function getLimitString(array $pageInfo)
-    {
-        if(isset($pageInfo['page']) && isset($pageInfo['page_size'])){
-            return self::getPaging($pageInfo['page'], $pageInfo['page_size']);
-        }
-        return '';
-    }
 }

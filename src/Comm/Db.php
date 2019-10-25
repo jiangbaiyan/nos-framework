@@ -14,16 +14,9 @@ use PDO;
 
 class Db
 {
+
     const DB_NODE_MASTER_KEY = 'write'; //主库
     const DB_NODE_SLAVE_KEY  = 'read';  //从库
-
-
-    /**
-     * key为可唯一确定数据库连接的配置信息
-     * value为数据库连接实例
-     * @var array $connPool 数据库连接池
-     */
-    private static $connPool = [];
 
 
     /**
@@ -108,11 +101,12 @@ class Db
             // 这几个参数唯一确定连接池的key
             $connPoolKey = $dsn . $config['user'] . $config['password'];
             // 连接池中不存在，需要重新往连接池中添加
-            if (!isset(self::$connPool[$connPoolKey])) {
+            $dbInstance = Pool::get($connPoolKey);
+            if (empty($dbInstance)) {
                 $dbInstance = new PDO($dsn, $config['user'], $config['password']);
-                self::$connPool[$connPoolKey] = $dbInstance;
+                Pool::set($connPoolKey, $dbInstance);
             }
-            return self::$connPool[$connPoolKey];
+            return $dbInstance;
         } catch (\Exception $e) {
             throw new CoreException('db|connect_failed|msg:' . $e->getMessage() . '|config:' . json_encode($config));
         }

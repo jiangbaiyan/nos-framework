@@ -9,6 +9,8 @@
 
 namespace Nos\Comm;
 
+use Nos\Http\Response;
+
 class Log
 {
 
@@ -30,11 +32,23 @@ class Log
         // 拼接日志完整路径
         $path = APP_PATH . '/logs/' . date('Y-m-d') . '.log';
         $str = '[' . date('Y-m-d H:i:s') . ']' . "[{$level}]". $msg . PHP_EOL;
-        // 写入文件
+        // 打开文件
         $handle = fopen($path, 'a');
-        flock($handle, LOCK_EX|LOCK_NB);
-        fwrite($handle, $str);
-        flock($handle, LOCK_UN);
+        if (!$handle) {
+            Response::apiCoreError('log|open_log_file_failed');
+        }
+        // 加锁
+        if (!flock($handle, LOCK_EX|LOCK_NB)) {
+            Response::apiCoreError('log|lock_log_file_failed');
+        }
+        // 写日志
+        if (!fwrite($handle, $str)) {
+            Response::apiCoreError('log|write_log_file_failed');
+        }
+        // 解锁
+        if (!flock($handle, LOCK_UN)) {
+            Response::apiCoreError('log|unlock_log_file_failed');
+        }
         fclose($handle);
         return true;
     }
