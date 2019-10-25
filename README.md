@@ -26,6 +26,19 @@ server {
   }
 }
 ```
+## 集成工具类
+ - composer
+ - 数据库操作类
+ - 配置类
+ - 文件操作类
+ - 日志处理类
+ - 队列操作类
+ - 分页操作类
+ - Redis操作类
+ - 表单验证器类
+ - 异常处理类
+ - 请求类
+ - 响应类
 ## Controller层使用
 ### 命名规范
  - 路由：http://localhost/article/query
@@ -70,7 +83,9 @@ class Article_QueryController extends BaseController
 
 namespace Common;
 
-class TestModel extends \BaseModel {
+use Nos\Base\BaseModel;
+
+class TestModel extends BaseModel {
 
     /*
      * 表名
@@ -94,10 +109,10 @@ class TestModel extends \BaseModel {
         ];
         // 附加选项
         $option = [
-             'id'  => 'asc'
-        ];       
+            'id'  => 'asc'
+        ];
         // 更新操作
-        $row = self::update($params,$wheres);
+        $row = self::update($params, $wheres);
         // 查询操作
         $data = self::select(['id','name'], $wheres, $option);
         // 返回数据
@@ -118,17 +133,24 @@ class TestModel extends \BaseModel {
  - 如果需要引入库，请直接编辑composer.json并添加需要的库
  - 然后执行composer install/update即可
 ## 内置验证
- - required：必填
+ - required：必填项
  - phone：手机号
  - email：邮箱地址
  - idCard：身份证
- - date：年月日2019-10-18
- - dateTime：时分秒17:45:16
- - integer：数字整数
- - numeric：能够转换成数字
- - float：单精度浮点
- - double：双精度浮点
- - array：数组
- - string：字符串
- - bool：布尔值
- - null：null值
+ - date：年月日。如2019-10-18
+ - dateTime：时分秒。如17:45:16
+ - integer：数字整型
+ - numeric：能够转换成数字型的字符串或原本就是数字
+ - float：单精度浮点型
+ - double：双精度浮点型
+ - array：数组类型
+ - string：字符串类型
+ - bool：布尔类型
+ - minNum：数值最小值。如minNum:2
+ - maxNum：数值最大值。如maxNum:3
+ - minLen：字符串长度最小值。如minLen:2
+ - maxLen：字符串长度最大值。如maxLen:3
+ - betweenNum：数值在两个值之间。如betWeenNum:1,5
+ - betweenLen：字符串长度在两个值之间。如betweenLen:2,4
+ - in：是否在给定枚举值之内。如in:jiangbaiyan,grape
+ - exist：是否包含某个子串。如exist:baiyan
