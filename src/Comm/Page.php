@@ -61,9 +61,9 @@ class Page
      * @param bool $asString 是否以SQL字符串形式返回
      * @return array|string
      */
-    public static function getPaging(int $page, int $pageSize, bool $asString = true)
+    public static function getPageData(int $page, int $pageSize, bool $asString = true)
     {
-        if($page < 1){
+        if ($page < 1) {
             $page = 1;
         }
         if ($pageSize < 1) {

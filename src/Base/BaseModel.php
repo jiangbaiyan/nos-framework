@@ -292,7 +292,9 @@ class BaseModel extends Db
      * 特殊选项处理
      * 例子：
      *       option: ['order' => ['id' => 'asc'],
-     *                'group' => 'id']
+     *                'group' => 'id',
+     *                'page'  => 1,
+     *                'length' => 10]
      * @param array $options
      * @return string
      */
@@ -322,14 +324,9 @@ class BaseModel extends Db
                 $optionArr[] = $options['order'];
             }
         }
-        if (!empty($options['limit'])) {
-            if (is_array($options['limit'])) {
-                $optionArr[] = Page::getLimitString($options['limit']);
-            } else {
-                $optionArr[] = $options['limit'];
-            }
+        if (isset($options['page']) && isset($options['length'])) {
+            $optionArr[] = Page::getPageData($options['page'], $options['length'], true);
         }
-
         return implode(' ', $optionArr);
     }
 }
