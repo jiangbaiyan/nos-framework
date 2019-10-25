@@ -83,7 +83,9 @@ class Article_QueryController extends BaseController
 
 namespace Common;
 
-class TestModel extends \BaseModel {
+use Nos\Base\BaseModel;
+
+class TestModel extends BaseModel {
 
     /*
      * 表名
