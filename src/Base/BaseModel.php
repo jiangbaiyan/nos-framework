@@ -20,6 +20,9 @@ class BaseModel extends Db
      */
     protected static $table;
 
+    /**
+     * @var string $database 数据库名
+     */
     protected static $database = '';
 
     /**

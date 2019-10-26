@@ -18,18 +18,6 @@ class Db
     const DB_NODE_MASTER_KEY = 'write'; //主库
     const DB_NODE_SLAVE_KEY  = 'read';  //从库
 
-    protected static $database = '';
-    /**
-     * @var array $config 数据库配置
-     */
-    private static $config = [];
-
-    /**
-     * @var array $connPool 数据库连接池
-     */
-    private static $connPool = [];
-
-
 
     /**
      * 查询操作
@@ -107,12 +95,11 @@ class Db
              */
             $config = Config::get('db.ini');
             // 获取当前节点下的配置
-            $config = self::$config[$node];
-
-            if (!empty(self::$database)) {
-                $config['database'] = self::$database;
+            $config = $config[$node];
+            // 子类指定数据库
+            if (!empty(static::$database)) {
+                $config['database'] = static::$database;
             }
-
             // PDO连接
             $dsn = "mysql:host={$config['host']};port={$config['port']};dbname={$config['database']}";
             // 这几个参数唯一确定连接池的key
