@@ -165,9 +165,11 @@ class BaseModel extends Db
     /**
      * 查询数据
      * 实例：
-     *       where:  ['id' => 1,'name'=>'苍井空']
+     *       where:  ['id' => 1, 'name'=>'苍井空']
      *       option: ['order' => ['id' => 'asc'],
-     *                'group' => 'id']
+     *                'group' => 'id',
+     *                'page'  => 1,
+     *                'length' => 10]
      * @param array $fields 需要查询的字段,默认查询所有的字段
      * @param array $where 查询条件
      * @param array $otherOption limit | group by | order by 等操作
