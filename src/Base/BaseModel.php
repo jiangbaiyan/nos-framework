@@ -24,7 +24,7 @@ class BaseModel extends Db
      * @var array 操作符
      */
     private static $operations = [
-        '>', '<', '>=', '<=', '!=', 'like'
+        '=', '>', '<', '>=', '<=', '!=', 'like', 'in'
     ];
 
     /**
@@ -141,7 +141,10 @@ class BaseModel extends Db
 
     /**
      * 删除数据
-     * 例子： where:  ['id' => 1,'name'=>'苍井空']
+     * 实例： where:  [
+     *                    ['id', '=', 1],
+     *                    ['name', '=', '苍井空']
+     *               ]
      * @param array $where 查询条件
      * @return int 影响行数
      * @throws CoreException
@@ -165,14 +168,17 @@ class BaseModel extends Db
     /**
      * 查询数据
      * 实例：
-     *       where:  ['id' => 1, 'name'=>'苍井空']
+     *       where:  [
+     *                    ['id', '=', 1],
+     *                    ['name', '=', '苍井空']
+     *               ]
      *       option: ['order' => ['id' => 'asc'],
      *                'group' => 'id',
      *                'page'  => 1,
      *                'length' => 10]
      * @param array $fields 需要查询的字段,默认查询所有的字段
      * @param array $where 查询条件
-     * @param array $otherOption limit | group by | order by 等操作
+     * @param array $otherOption page| length | group by | order by 等操作
      * @return array 数据
      * @throws CoreException
      */
@@ -200,9 +206,13 @@ class BaseModel extends Db
         return self::doSql(self::DB_NODE_SLAVE_KEY, $sql, $where['bind']);
     }
 
+
     /**
      * 更新数据
-     * 实例： where:  ['id' => 1,'name'=>'苍井空']
+     * 实例： where:  [
+     *                    ['id', '=', 1],
+     *                    ['name', '=', '苍井空']
+     *               ]
      *       params: ['age' => 3]
      * @param array $params 更新的数据
      * @param array $where 被更新的记录
@@ -216,24 +226,37 @@ class BaseModel extends Db
         }
         $where = self::prepareWhere($where);
         $params = array_unique($params);
-        $settingBinds = array_map(function ($k) {
-            return '`' . $k . '`=:' . $k;
-        }, array_keys($params));
-        $sql = 'update `' . static::$table . '` set ' . implode(',', $settingBinds) . ' where ' . $where['where'];
-        return self::doSql(self::DB_NODE_MASTER_KEY, $sql, array_merge($params, $where['bind']));
+        $sql = 'update `' . static::$table . '` set ';
+        $bind = [];
+        // 组装sql与绑定参数
+        foreach ($params as $field => $value) {
+            $sql .= $field . ' = ' . '?,';
+            $bind[] = $value;
+        }
+        // 去除末尾多余逗号
+        $sql = rtrim($sql, ',');
+        // 如果有where，那么拼接where
+        if (!empty($where['where'])) {
+            $sql .= ' where ' . $where['where'];
+        }
+        return self::doSql(self::DB_NODE_MASTER_KEY, $sql, array_merge($bind, $where['bind']));
     }
 
 
     /**
      *
      * 处理where条件
-     * 例子： where:  ['id' => 1,'name'=>'苍井空']
+     * 例子:  where:  [
+     *                    ['id', '=', 1],
+     *                    ['name', '=', '苍井空']
+     *               ]
      * @param array $condition 条件数组
      * @return array
      * [
      *     'where' => '...'
      *     'bind' => []
      * ]
+     * @throws CoreException
      */
     public static function prepareWhere(array $condition)
     {
@@ -243,49 +266,40 @@ class BaseModel extends Db
                 'bind' => []
             ];
         }
-        $whereArr = [];
+        $whereStr = '';
         $bind = [];
-        foreach ($condition as $field => $val) {
-            // 当$field为数字的时候支持 a=1 or b=1 这种自定义查询
-            if (is_int($field) && !empty($val)) {
-                $whereArr[] = '(' . $val . ')';
-                continue;
+        foreach ($condition as $nKey => $queryArr) {
+            list($field, $op, $value) = $queryArr;
+            // 判断运算符是否合法
+            if (!in_array($op, self::$operations)) {
+                throw new CoreException("baseModel|illegal_op:{$op}");
             }
-
-            if (is_array($val)) {
-                // 检测是否为有操作符行为
-                if (in_array(key($val), self::$operations, true)) {
-                    $i = 0;
-                    foreach ($val as $operation => $item_val) {
-                        $whereArr[] = sprintf('`%s` ' . $operation . ' :%s%d', $field, $field, $i);
-                        $bind[$field . $i] = $item_val;
-                        $i++;
-                    }
-                } elseif (!empty($val)) {
-                    $params = array_unique($val);
-
-                    $i = 0;
-                    $whereNo = [];
-                    $bindNo = [];
-                    foreach ($params as $key => $param) {
-                        $whereNo[] = sprintf(':%s%d', $key, $i);
-                        $bindNo[sprintf('%s%d', $key, $i)] = $param;
-                        $i++;
-                    }
-
-                    $whereArr = sprintf('`%s` %s (%s)', $key, 'in', implode(', ', $whereNo));
-                    $bind = array_merge($bind, $bindNo);
+            // 查询运算符为in，value必须为数组
+            if ($op == 'in') {
+                if (!is_array($value)) {
+                    throw new CoreException("baseModel|in_op_illegal_value");
                 }
-            } else {
-                $whereArr[] = sprintf('`%s` = :%s', $field, $field);
-                $bind[$field] = $val;
+                $whereStr .= $field . ' in ' . '(';
+                // 组装sql与绑定参数
+                foreach ($value as $item) {
+                    $whereStr .= '?,';
+                    $bind[] = $item;
+                }
+                $whereStr = rtrim($whereStr, ',') . ') and ';
+            } else { // 是普通的查询运算符
+                // 如果是like运算，需要用%包裹
+                if ($op == 'like') {
+                    $value = "%$value%";
+                }
+                $whereStr .= $field . " {$op} " . '?' . ' and ';
+                $bind[] = $value;
             }
         }
-
-        $whereArr = array_filter($whereArr);
+        // 取出末尾多余and
+        $whereStr = rtrim($whereStr, ' and ');
         return [
-            'where' => implode(' AND ', $whereArr),
-            'bind' => $bind,
+            'where' => $whereStr,
+            'bind'  => $bind,
         ];
     }
 
