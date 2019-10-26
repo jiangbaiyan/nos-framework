@@ -11,14 +11,14 @@ namespace Nos\Comm;
 
 use Nos\Exception\CoreException;
 use PDO;
-use Yaf\Config\Ini;
 
 class Db
 {
+
     const DB_NODE_MASTER_KEY = 'write'; //主库
     const DB_NODE_SLAVE_KEY  = 'read';  //从库
 
-    private static $database = '';
+    protected static $database = '';
     /**
      * @var array $config 数据库配置
      */
@@ -28,6 +28,7 @@ class Db
      * @var array $connPool 数据库连接池
      */
     private static $connPool = [];
+
 
 
     /**
@@ -103,30 +104,28 @@ class Db
              *     write => [],
              *     read => []
              * ]
-             *  若配置为空，需要重新加载
              */
-            if (empty(self::$config)) {
-                $config = new Ini(APP_PATH . '/config/db.ini', ini_get('yaf.environ'));
-                self::$config = $config->toArray();
-            }
+            $config = Config::get('db.ini');
             // 获取当前节点下的配置
             $config = self::$config[$node];
 
             if (!empty(self::$database)) {
                 $config['database'] = self::$database;
             }
+
             // PDO连接
             $dsn = "mysql:host={$config['host']};port={$config['port']};dbname={$config['database']}";
             // 这几个参数唯一确定连接池的key
             $connPoolKey = $dsn . $config['user'] . $config['password'];
             // 连接池中不存在，需要重新往连接池中添加
-            if (!isset(self::$connPool[$connPoolKey])) {
+            $dbInstance = Pool::get($connPoolKey);
+            if (empty($dbInstance)) {
                 $dbInstance = new PDO($dsn, $config['user'], $config['password']);
-                self::$connPool[$connPoolKey] = $dbInstance;
+                Pool::set($connPoolKey, $dbInstance);
             }
-            return self::$connPool[$connPoolKey];
+            return $dbInstance;
         } catch (\Exception $e) {
-            throw new CoreException('db|connect_failed|msg:' . $e->getMessage());
+            throw new CoreException('db|connect_failed|msg:' . $e->getMessage() . '|config:' . json_encode($config));
         }
     }
 }
