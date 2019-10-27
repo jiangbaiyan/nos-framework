@@ -208,7 +208,17 @@ class BaseModel extends Db
         if (!empty($otherOption)) {
             $sql .= ' ' . $otherOption;
         }
-        return self::doSql(self::DB_NODE_SLAVE_KEY, $sql, $where['bind']);
+        $data = self::doSql(self::DB_NODE_SLAVE_KEY, $sql, $where['bind']);
+        // 如果有分页参数，返回分页参数
+        if (isset($otherOption['page']) && isset($otherOption['length'])) {
+            return [
+                'page'   => $otherOption['page'],
+                'length' => $otherOption['length'],
+                'data'   => $data
+            ];
+        } else {
+            return $data;
+        }
     }
 
 
