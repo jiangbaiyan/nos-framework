@@ -53,7 +53,7 @@ class Validator
                     throw new CoreException("validator|rule_undefined|rule:{$ruleItem}");
                 }
                 if ($ret === false) { // 校验失败收口统一报错
-                    throw new ParamValidateFailedException("参数{$params[$field]}不符合校验规则{$ruleItem}");
+                    throw new ParamValidateFailedException("参数{$field}:{$params[$field]}不符合校验规则{$ruleItem}");
                 }
             }
         }
