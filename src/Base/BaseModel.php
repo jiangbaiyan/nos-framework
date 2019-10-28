@@ -107,6 +107,19 @@ class BaseModel extends Db
     }
 
     /**
+     * 插入并返回插入后的id
+     * @param array $row
+     * @return mixed
+     * @throws CoreException
+     */
+    public static function insertGetId(array $row)
+    {
+        self::insert($row);
+        $sql = 'SELECT LAST_INSERT_ID()';
+        return self::doSql(self::DB_NODE_MASTER_KEY, $sql);
+    }
+
+    /**
      * 批量插入
      * @param array $rows 二维数组
      * $rows示例:
