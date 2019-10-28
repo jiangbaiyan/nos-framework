@@ -210,7 +210,7 @@ class BaseModel extends Db
             $where = self::prepareWhere($where, $withTrashed);
         }
         if (!empty($otherOption)) {
-            $otherOption = self::prepareOption($otherOption);
+            $optionSql = self::prepareOption($otherOption);
         }
         if (empty($fields)) {
             $fields = ['*'];
@@ -222,12 +222,12 @@ class BaseModel extends Db
         if (!empty($where['where'])) {
             $sql .= ' where ' . $where['where'];
         }
-        if (!empty($otherOption)) {
-            $sql .= ' ' . $otherOption;
+        if (!empty($optionSql)) {
+            $sql .= ' ' . $optionSql;
         }
         $data = self::doSql(self::DB_NODE_SLAVE_KEY, $sql, $where['bind']);
         // 如果有分页参数，返回分页参数
-        if (isset($otherOption['page']) && isset($otherOption['length'])) {
+        if (!empty($otherOption['page']) && !empty($otherOption['length'])) {
             return [
                 'page'   => $otherOption['page'],
                 'length' => $otherOption['length'],
@@ -381,7 +381,7 @@ class BaseModel extends Db
                 $optionArr[] = $options['order'];
             }
         }
-        if (isset($options['page']) && isset($options['length'])) {
+        if (!empty($options['page']) && !empty($options['length'])) {
             $optionArr[] = Page::getPageData($options['page'], $options['length'], true);
         }
         return implode(' ', $optionArr);
