@@ -72,6 +72,10 @@ class Db
             $config = Config::get('db.ini');
             // 获取当前节点下的配置
             $config = $config[$node];
+            // 子类指定数据库
+            if (!empty(static::$database)) {
+                $config['database'] = static::$database;
+            }
             // PDO连接
             $dsn = "mysql:host={$config['host']};port={$config['port']};dbname={$config['database']}";
             // 这几个参数唯一确定连接池的key
