@@ -82,7 +82,7 @@ class BaseModel extends Db
 
     /**
      * 单条插入
-     * @param array $row 一维数组
+     * @param array $row 插入数据的一维数组
      * $row示例:
      * [
      *     'name' => '苍老师',
@@ -108,8 +108,8 @@ class BaseModel extends Db
 
     /**
      * 插入并返回插入后的id
-     * @param array $row
-     * @return mixed
+     * @param array $row 插入数据的一维数组
+     * @return int 插入后的id
      * @throws CoreException
      */
     public static function insertGetId(array $row)
@@ -121,7 +121,7 @@ class BaseModel extends Db
 
     /**
      * 批量插入
-     * @param array $rows 二维数组
+     * @param array $rows 插入数据的二维数组
      * $rows示例:
      * [
      *     [
@@ -133,7 +133,7 @@ class BaseModel extends Db
      *         'age' => 10
      *     ]
      * ]
-     * @return bool
+     * @return int 影响行数
      * @throws CoreException
      */
     public static function insertBatch(array $rows)
