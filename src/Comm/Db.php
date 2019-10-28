@@ -20,31 +20,7 @@ class Db
 
 
     /**
-     * 查询操作
-     * @param string $sql 查询SQL语句
-     * @param array $bind 参数绑定
-     * @return mixed
-     * @throws CoreException
-     */
-    public static function query($sql, array $bind = [])
-    {
-        return self::doSql(self::DB_NODE_SLAVE_KEY, $sql, $bind);
-    }
-
-    /**
-     * 增删改操作
-     * @param string $sql 查询SQL语句
-     * @param array $bind 参数绑定
-     * @return mixed
-     * @throws CoreException
-     */
-    public static function modify(string $sql, array $bind = [])
-    {
-        return self::doSql(self::DB_NODE_MASTER_KEY, $sql, $bind);
-    }
-
-    /**
-     * 执行sql语句
+     * 执行原生sql语句
      * @param string $node 数据库节点
      * @param string $sql SQL语句
      * @param array $bind 参数绑定
