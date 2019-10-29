@@ -239,7 +239,7 @@ class BaseModel extends Db
             $sql .= ' ' . $optionSql;
         }
         $data = self::doSql(self::DB_NODE_SLAVE_KEY, $sql, $where['bind']);
-        if (count($data) == 0) {
+        if (count($data) == 1) {
             $data = $data[0];
         }
         // 如果有分页参数，返回分页参数
