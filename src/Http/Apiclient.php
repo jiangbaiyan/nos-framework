@@ -44,7 +44,7 @@ class Apiclient
         return json_decode($result, true);
     }
 
-    public function curlApi($serverName, $actionName, $params, $type)
+    public function curlApi($actionName, $params, $type)
     {
         $url = $this->serviceUrl . '/' . $actionName;
         $res = Request::send($type, $url, $params);
