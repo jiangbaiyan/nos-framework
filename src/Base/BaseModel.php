@@ -219,9 +219,7 @@ class BaseModel extends Db
      */
     public static function select(array $fields = [], array $where = [], array $otherOption = [], bool $withTrashed = false)
     {
-        if (!empty($where)) {
-            $where = self::prepareWhere($where, $withTrashed);
-        }
+        $where = self::prepareWhere($where, $withTrashed);
         if (!empty($otherOption)) {
             $optionSql = self::prepareOption($otherOption);
         }
