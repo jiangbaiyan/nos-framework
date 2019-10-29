@@ -82,7 +82,7 @@ class BaseModel extends Db
 
     /**
      * 单条插入
-     * @param array $row 一维数组
+     * @param array $row 插入数据的一维数组
      * $row示例:
      * [
      *     'name' => '苍老师',
@@ -107,8 +107,21 @@ class BaseModel extends Db
     }
 
     /**
+     * 插入并返回插入后的id
+     * @param array $row 插入数据的一维数组
+     * @return int 插入后的id
+     * @throws CoreException
+     */
+    public static function insertGetId(array $row)
+    {
+        self::insert($row);
+        $sql = 'SELECT LAST_INSERT_ID()';
+        return self::doSql(self::DB_NODE_MASTER_KEY, $sql);
+    }
+
+    /**
      * 批量插入
-     * @param array $rows 二维数组
+     * @param array $rows 插入数据的二维数组
      * $rows示例:
      * [
      *     [
@@ -120,7 +133,7 @@ class BaseModel extends Db
      *         'age' => 10
      *     ]
      * ]
-     * @return bool
+     * @return int 影响行数
      * @throws CoreException
      */
     public static function insertBatch(array $rows)
@@ -210,7 +223,7 @@ class BaseModel extends Db
             $where = self::prepareWhere($where, $withTrashed);
         }
         if (!empty($otherOption)) {
-            $otherOption = self::prepareOption($otherOption);
+            $optionSql = self::prepareOption($otherOption);
         }
         if (empty($fields)) {
             $fields = ['*'];
@@ -222,12 +235,15 @@ class BaseModel extends Db
         if (!empty($where['where'])) {
             $sql .= ' where ' . $where['where'];
         }
-        if (!empty($otherOption)) {
-            $sql .= ' ' . $otherOption;
+        if (!empty($optionSql)) {
+            $sql .= ' ' . $optionSql;
         }
         $data = self::doSql(self::DB_NODE_SLAVE_KEY, $sql, $where['bind']);
+        if (count($data) == 1) {
+            $data = $data[0];
+        }
         // 如果有分页参数，返回分页参数
-        if (isset($otherOption['page']) && isset($otherOption['length'])) {
+        if (!empty($otherOption['page']) && !empty($otherOption['length'])) {
             return [
                 'page'   => $otherOption['page'],
                 'length' => $otherOption['length'],
@@ -381,7 +397,7 @@ class BaseModel extends Db
                 $optionArr[] = $options['order'];
             }
         }
-        if (isset($options['page']) && isset($options['length'])) {
+        if (!empty($options['page']) && !empty($options['length'])) {
             $optionArr[] = Page::getPageData($options['page'], $options['length'], true);
         }
         return implode(' ', $optionArr);

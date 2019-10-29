@@ -57,25 +57,25 @@ class Page
     /**
      * 获取分页参数
      * @param int $page 当前页码
-     * @param int $pageSize 每页条数
+     * @param int $length 每页条数
      * @param bool $asString 是否以SQL字符串形式返回
      * @return array|string
      */
-    public static function getPageData(int $page, int $pageSize, bool $asString = true)
+    public static function getPageData(int $page = 0, int $length = 0, bool $asString = true)
     {
-        if ($page < 1) {
-            $page = 1;
+        // 参数非法，不做分页
+        if ($page < 1 || $length < 1) {
+            $offset = 0;
+            $length = 0;
+        } else {
+            $offset = ($page - 1) * $length;
         }
-        if ($pageSize < 1) {
-            $pageSize = 10;
-        }
-        $offset = ($page - 1) * $pageSize;
         if ($asString) {
-            return " limit {$offset}, {$pageSize} ";
+            return " limit {$offset}, {$length} ";
         }
         return [
             'offset' => $offset,
-            'rows'   => $pageSize
+            'rows'   => $length
         ];
     }
 
