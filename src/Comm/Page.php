@@ -61,7 +61,7 @@ class Page
      * @param bool $asString 是否以SQL字符串形式返回
      * @return array|string
      */
-    public static function getPageData(int $page = 1, int $length = 10, bool $asString = true)
+    public static function getPageData(int $page = 0, int $length = 0, bool $asString = true)
     {
         // 参数非法，不做分页
         if ($page < 1 || $length < 1) {
