@@ -51,29 +51,29 @@ class Apiclient
 
     /**
      * rpc并行调用
-     * @param $connomains
+     * @param $requestParams
      * @param int $post
      * 实例：
-     *      $connomains = [
-    [
-    'path'   => '/unified/register',
-    'params' => [ 'id' => 1]
-    ]
-    ];
+     *      $requestParams = [
+    * [
+    * 'path'   => '/unified/register',
+    * 'params' => [ 'id' => 1]
+    * ]
+    * ];
      * @return array
      * @throws CoreException
      */
-    public function curlApiMulti($connomains,$post = 0)
+    public function curlApiMulti($requestParams,$post = 'get')
     {
-        foreach ($connomains as $k => $val) {
-            $connomains[$k]['params']['appId'] = $this->appId;
-            $connomains[$k]['params']['accessToken'] = $this->accessToken;
-            $connomains[$k]['params']['timestamp'] = time();
+        foreach ($requestParams as $k => $val) {
+            $requestParams[$k]['params']['appId'] = $this->appId;
+            $requestParams[$k]['params']['accessToken'] = $this->accessToken;
+            $requestParams[$k]['params']['timestamp'] = time();
         }
-        if (empty($connomains)) {
+        if (empty($requestParams)) {
             throw new CoreException('curl|curlApiMulti: params is empty');
         }
 
-        return Request::sendMulti($connomains, $this->serviceUrl, $post);
+        return Request::sendMulti($requestParams, $this->serviceUrl, $post);
     }
 }
