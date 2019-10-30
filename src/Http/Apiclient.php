@@ -13,7 +13,7 @@ class Apiclient
 
     public function __construct($serviceName)
     {
-        $this->rpcConfig = Config::get('api.ini');
+        $this->rpcConfig = Config::get('rpc.ini');
         if (array_key_exists($serviceName, $this->rpcConfig)) {
             $this->serviceUrl = $this->rpcConfig[$serviceName]['host'];
             $this->serviceName = $serviceName;
@@ -22,6 +22,17 @@ class Apiclient
         }
     }
 
+    /**
+     * rpc单个调用
+     * @param $actionName
+     * @param $params
+     * @param $type
+     * 实例： $actionName = 'article/query'
+     *       $params = [ 'id' => 1]
+     *       $type = 'post';
+     * @return bool|string
+     * @throws CoreException
+     */
     public function curlApi($actionName, $params, $type)
     {
         $url = $this->serviceUrl . '/' . $actionName;
@@ -30,6 +41,20 @@ class Apiclient
     }
 
 
+    /**
+     * rpc并行调用
+     * @param $connomains
+     * @param int $post
+     * 实例：
+     *      $connomains = [
+            [
+                'path'   => '/unified/register',
+                'params' => [ 'id' => 1]
+            ]
+            ];
+     * @return array
+     * @throws CoreException
+     */
     public function curlApiMulti($connomains,$post = 0)
     {
         if (empty($connomains)) {

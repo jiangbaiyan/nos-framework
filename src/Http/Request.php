@@ -230,6 +230,30 @@ class Request
         }
     }
 
+    /**
+     * 并行请求接口
+     * 实例：
+     * $data = [
+                'appId' => 'uc_all',
+                'accessToken' => 111,
+                'timestamp'   => 111,
+                'email' => "123122133@qq.com",
+                'password' => "123www"
+                ];
+
+                $connomains = [
+                 [
+                    'path'   => '/unified/register',
+                    'params' => $data
+                    ]
+                ];
+     * $serviceUrl = "http://www.baidu.com";
+     * @param array $connomains
+     * @param string $serviceUrl
+     * @param int $post
+     * @return array
+     * @throws CoreException
+     */
     public static function sendMulti(array $connomains, string $serviceUrl, int $post)
     {
         try {
