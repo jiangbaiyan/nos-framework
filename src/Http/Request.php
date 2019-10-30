@@ -234,17 +234,16 @@ class Request
      * 并行请求接口
      * 实例：
      * $data = [
-                'appId' => 'uc_all',
-                'accessToken' => 111,
-                'timestamp'   => 111,
-                'email' => "123122133@qq.com",
-                'password' => "123www"
+                    'appId' => 'uc_all',
+                    'accessToken' => 111,
+                    'timestamp'   => 111,
+                    'email' => "123122133@qq.com",
+                    'password' => "123www"
                 ];
-
                 $connomains = [
-                 [
-                    'path'   => '/unified/register',
-                    'params' => $data
+                     [
+                        'path'   => '/unified/register',
+                        'params' => $data
                     ]
                 ];
      * $serviceUrl = "http://www.baidu.com";
@@ -301,14 +300,14 @@ class Request
                 curl_multi_remove_handle($handler, $conn[$i]);
             }
             curl_multi_close($handler);
-        }catch (\Exception $e) {
-            throw new CoreException('curl|apic_lient_request_error|paramsType:' . $post . '|$params:' . json_encode($connomains) . '|curl_exception:' . $e->getMessage() . '|curl_error:' . curl_error($handler));
+        } catch (\Exception $e) {
+            throw new CoreException('curl|send_request_error|paramsType:' . $post . '|$params:' . json_encode($connomains) . '|curl_exception:' . $e->getMessage() . '|curl_error:' . curl_error($handler));
         }
         $info = [];
         foreach ($res as $val) {
             $val = json_decode($val, true);
             if ($val['status'] !== 200) {
-                throw new CoreException('curl|apic_lient_request_error|' . $val['msg']);
+                throw new CoreException('curl|send_request_error|' . $val['msg']);
             }
             $info[] = $val['data'];
         }

@@ -5,7 +5,7 @@ namespace Nos\Http;
 use Nos\Exception\CoreException;
 use Nos\Comm\Config;
 
-class Apiclient
+class RpcClient
 {
     private $serviceUrl;
     private $serviceName;
@@ -23,7 +23,7 @@ class Apiclient
             $this->accessToken = $this->rpcConfig[$serviceName]['accessToken'];
             $this->serviceName = $serviceName;
         } else {
-            throw new CoreException('curl|Apiclient: ini is empty');
+            throw new CoreException('rpc|ini_is_empty');
         }
     }
 
@@ -38,7 +38,7 @@ class Apiclient
      * @return bool|string
      * @throws CoreException
      */
-    public function curlApi($actionName, $params, $type)
+    public function send($actionName, $params, $type)
     {
         $params['appId'] = $this->appId;
         $params['accessToken'] = $this->accessToken;
@@ -63,7 +63,7 @@ class Apiclient
      * @return array
      * @throws CoreException
      */
-    public function curlApiMulti($connomains,$post = 0)
+    public function sendMulti($connomains, $post = 0)
     {
         foreach ($connomains as $k => $val) {
             $connomains[$k]['params']['appId'] = $this->appId;
@@ -71,9 +71,8 @@ class Apiclient
             $connomains[$k]['params']['timestamp'] = time();
         }
         if (empty($connomains)) {
-            throw new CoreException('curl|curlApiMulti: params is empty');
+            throw new CoreException('rpc|rpc_send_multi: params is empty');
         }
-
         return Request::sendMulti($connomains, $this->serviceUrl, $post);
     }
 }
