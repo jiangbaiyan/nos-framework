@@ -1,8 +1,7 @@
 <?php
 
-namespace Nos\Comm;
+namespace Nos\Http;
 
-use Nos\Http\Request;
 use Nos\Exception\CoreException;
 
 class Apiclient
