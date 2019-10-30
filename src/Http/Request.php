@@ -304,7 +304,15 @@ class Request
         }catch (\Exception $e) {
             throw new CoreException('curl|apic_lient_request_error|paramsType:' . $post . '|$params:' . json_encode($connomains) . '|curl_exception:' . $e->getMessage() . '|curl_error:' . curl_error($handler));
         }
+        $info = [];
+        foreach ($res as $val) {
+            $val = json_decode($val, true);
+            if ($val['status'] !== 200) {
+                throw new CoreException('curl|apic_lient_request_error|' . $val['msg']);
+            }
+            $info[] = $val['data'];
+        }
 
-        return !empty($res) ? $res : [];
+        return !empty($info) ? $info : [];
     }
 }
