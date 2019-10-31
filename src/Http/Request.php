@@ -18,12 +18,12 @@ class Request
 
     const PARAMS_TYPE_URLENCODED = 1; // QUERY_STRING形式提交参数
     const PARAMS_TYPE_JSON       = 2; // 请求体携带JSON形式提交参数
-    const PARAMS_TYPE_COMMON     = 3; // 浏览器表单形式提交参数
+    const PARAMS_TYPE_COMMON     = 3; // 通用形式提交参数(http_build_query)
 
 
-    const REQUEST_TYPE_GET       = 'GET'; // GET请求
-    const REQUEST_TYPE_POST      = 'POST'; // POST请求
-    const REQUEST_TYPE_PUT       = 'PUT'; // PUT请求
+    const REQUEST_TYPE_GET       = 'GET';    // GET请求
+    const REQUEST_TYPE_POST      = 'POST';   // POST请求
+    const REQUEST_TYPE_PUT       = 'PUT';    // PUT请求
     const REQUEST_TYPE_DELETE    = 'DELETE'; // DELETE请求
 
 
