@@ -16,7 +16,18 @@ use Nos\Comm\Config;
 class RpcClient
 {
 
-    private $serviceName;
+    /**
+     * 服务host必填
+     * @var string
+     */
+    private $host = '';
+
+    /**
+     * 服务名必填
+     * @var string
+     */
+    private $serviceName = '';
+
 
     /**
      * 单例获取RPC实例
