@@ -17,12 +17,13 @@ class Request
 {
 
     const PARAMS_TYPE_URLENCODED = 1; // QUERY_STRING形式提交参数
-    const PARAMS_TYPE_FORM_DATA  = 2; // 浏览器表单形式提交参数
-    const PARAMS_TYPE_JSON       = 3; // 请求体携带JSON形式提交参数
+    const PARAMS_TYPE_JSON       = 2; // 请求体携带JSON形式提交参数
+    const PARAMS_TYPE_COMMON     = 3; // 通用形式提交参数（参数不作处理）
 
-    const REQUEST_TYPE_GET       = 'GET'; // GET请求
-    const REQUEST_TYPE_POST      = 'POST'; // POST请求
-    const REQUEST_TYPE_PUT       = 'PUT'; // PUT请求
+
+    const REQUEST_TYPE_GET       = 'GET';    // GET请求
+    const REQUEST_TYPE_POST      = 'POST';   // POST请求
+    const REQUEST_TYPE_PUT       = 'PUT';    // PUT请求
     const REQUEST_TYPE_DELETE    = 'DELETE'; // DELETE请求
 
 
@@ -166,13 +167,13 @@ class Request
         // 是否是合法请求参数类型
         if (!in_array($paramsType, [
             self::PARAMS_TYPE_URLENCODED,
-            self::PARAMS_TYPE_FORM_DATA,
-            self::PARAMS_TYPE_JSON
+            self::PARAMS_TYPE_JSON,
+            self::PARAMS_TYPE_COMMON
         ])) {
             throw new CoreException('curl|wrong_params_type|url:' . $url . '|reqType:' . $reqType . '|paramsType:' . $paramsType . '|$params:' .json_encode($params));
         }
         try {
-            $ch = curl_init();
+            $ch = curl_init($url);
             // 初始化选项
             curl_setopt_array($ch, [
                 CURLOPT_RETURNTRANSFER => true,
@@ -183,25 +184,33 @@ class Request
             if (!empty($options)){
                 curl_setopt_array($ch, $options);
             }
+            $strQuery = '';
             // 判断请求参数携带类型并设置请求参数
-            switch ($paramsType) {
-                case self::PARAMS_TYPE_URLENCODED:
-                    $params = http_build_query($params);
-                    break;
-                case self::PARAMS_TYPE_FORM_DATA:
-                    break;
-                case self::PARAMS_TYPE_JSON:
-                    $params = json_encode($params);
-                    curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            if (!empty($params)) {
+                switch ($paramsType) {
+                    case self::PARAMS_TYPE_URLENCODED:
+                        $strQuery = '?';
+                        foreach ($params as $strKey => $strValue) {
+                            $strQuery .= $strKey . '=' . $strValue . '&';
+                        }
+                        $strQuery = rtrim($strQuery, '&');
+                        break;
+                    case self::PARAMS_TYPE_JSON:
+                        $params = json_encode($params);
+                        curl_setopt($ch, CURLOPT_HTTPHEADER, [
                             'Content-Type: application/json; charset=utf-8',
                             'Content-Length: ' . strlen($params)
-                    ]);
-                    break;
+                        ]);
+                        break;
+                    case self::PARAMS_TYPE_COMMON:
+                        break;
+                }
             }
             // 判断并设置请求类型
             switch ($reqType) {
                 case self::REQUEST_TYPE_GET:
-                    $url .= '?' . http_build_query($params);
+                    $url .= $strQuery;
+                    curl_setopt($ch, CURLOPT_URL, $url);
                     break;
                 case self::REQUEST_TYPE_POST:
                     curl_setopt($ch, CURLOPT_POST, true);
@@ -213,8 +222,7 @@ class Request
                     curl_setopt($ch, CURLOPT_POSTFIELDS, $params);
                     break;
             }
-            curl_setopt($ch, CURLOPT_URL, $url);
-            // 发送请求
+            // 发送请求，重试3次
             $res = curl_exec($ch);
             if (empty($res)){
                 for ($i = 0; $i < $retry; $i++){
@@ -270,7 +278,12 @@ class Request
                 curl_setopt($chs[$nIndex], CURLOPT_RETURNTRANSFER, 1);
                 switch ($reqType) {
                     case self::REQUEST_TYPE_GET:
-                        $url .= '?' . http_build_query($value['params']);
+                        $strQuery = '?';
+                        foreach ($params as $strKey => $strValue) {
+                            $strQuery .= $strKey . '=' . $strValue . '&';
+                        }
+                        $strQuery = rtrim($strQuery, '&');
+                        $url .= $strQuery;
                         break;
                     case self::REQUEST_TYPE_POST:
                         curl_setopt($chs[$nIndex], CURLOPT_POST, true);
