@@ -60,7 +60,7 @@ class RpcClient
      * @return bool|string
      * @throws CoreException
      */
-    public function send(string $reqType, string $actionName, array $params)
+    public function send(string $reqType, string $actionName, array $params = [])
     {
         $params['appId'] = $this->appId; // TODO 待优化字段可定制，而非写死的appId等值
         $params['accessToken'] = $this->accessToken;
