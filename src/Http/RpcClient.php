@@ -1,4 +1,11 @@
 <?php
+/**
+ * RPC客户端
+ * Created by PhpStorm.
+ * User: nos
+ * Date: 2019-10-31
+ * Time: 10:31
+ */
 
 namespace Nos\Http;
 
@@ -45,9 +52,9 @@ class RpcClient
 
     /**
      * RPC调用
-     * @param $actionName
-     * @param $params
-     * @param $reqType
+     * @param string $reqType 请求类型
+     * @param string $actionName 动作名称
+     * @param array $params 请求参数
      * @return bool|string
      * @throws CoreException
      */
