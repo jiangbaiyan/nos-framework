@@ -49,7 +49,6 @@ class RpcClient
             foreach ($rpcParams as $key => $value) {
                 $rpcInstance->$key = $value;
             }
-            $rpcInstance->serviceName = $serviceName;
             Pool::set($serviceName, $rpcInstance);
         }
         return $rpcInstance;
