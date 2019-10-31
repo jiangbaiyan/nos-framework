@@ -7,24 +7,26 @@ use Nos\Comm\Config;
 
 class RpcClient
 {
+
     private $serviceUrl;
+
     private $serviceName;
+
     private $appId;
+
     private $accessToken;
 
-    protected  $rpcConfig = '';
 
     public function __construct($serviceName)
     {
-        $this->rpcConfig = Config::get('rpc.ini');
-        if (array_key_exists($serviceName, $this->rpcConfig)) {
-            $this->serviceUrl = $this->rpcConfig[$serviceName]['host'];
-            $this->appId = $this->rpcConfig[$serviceName]['appId'];
-            $this->accessToken = $this->rpcConfig[$serviceName]['accessToken'];
-            $this->serviceName = $serviceName;
-        } else {
+        $config = Config::get('rpc.ini');
+        if (!isset($config[$serviceName])) {
             throw new CoreException('rpc|ini_is_empty');
         }
+        $this->serviceUrl  = $config[$serviceName]['host'];
+        $this->appId       = $config[$serviceName]['appId'];
+        $this->accessToken = $config[$serviceName]['accessToken'];
+        $this->serviceName = $serviceName;
     }
 
 
