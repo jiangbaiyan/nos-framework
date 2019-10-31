@@ -32,6 +32,7 @@ class Db
         try{
             // 从连接池拿出数据库实例
             $dbInstance = self::getInstance($node);
+            $dbInstance->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
             $handle = $dbInstance->prepare($sql);
             $res = $handle->execute($bind);
             if (!$res){
