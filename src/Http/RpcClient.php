@@ -16,14 +16,7 @@ use Nos\Comm\Config;
 class RpcClient
 {
 
-    private $host;
-
     private $serviceName;
-
-    private $appId;
-
-    private $accessToken;
-
 
     /**
      * 单例获取RPC实例
@@ -41,7 +34,7 @@ class RpcClient
             }
             $rpcInstance = new self();
             $rpcParams = $config[$serviceName];
-            // host/appId/accessToken等配置信息赋值
+            // host/appId/accessToken等配置信息赋值，取决于配置文件字段名
             foreach ($rpcParams as $key => $value) {
                 $rpcInstance->$key = $value;
             }
@@ -62,9 +55,10 @@ class RpcClient
      */
     public function send(string $reqType, string $actionName, array $params = [])
     {
-        $params['appId'] = $this->appId; // TODO 待优化字段可定制，而非写死的appId等值
-        $params['accessToken'] = $this->accessToken;
-        $params['timestamp'] = time();
+        // 将刚才获取的配置文件对象中的参数属性添加到请求参数中
+        foreach ($this as $property => $value) {
+            $params[$property] = $value;
+        }
         $url = $this->host . '/' . $actionName;
         return Request::send($reqType, $url, $params);
     }
