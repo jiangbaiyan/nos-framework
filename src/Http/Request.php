@@ -187,9 +187,9 @@ class Request
             // 判断请求参数携带类型并设置请求参数
             switch ($paramsType) {
                 case self::PARAMS_TYPE_URLENCODED:
-                    $url .= '?';
+                    $params = '';
                     foreach ($params as $strKey => $strValue) {
-                        $url .= $strKey . '=' . $strValue . '&';
+                        $params .= $strKey . '=' . $strValue . '&';
                     }
                     $params = rtrim($url, '&');
                     break;
@@ -276,7 +276,12 @@ class Request
                 curl_setopt($chs[$nIndex], CURLOPT_RETURNTRANSFER, 1);
                 switch ($reqType) {
                     case self::REQUEST_TYPE_GET:
-                        $url .= '?' . http_build_query($value['params']);
+                        $params = '';
+                        foreach ($params as $strKey => $strValue) {
+                            $params .= $strKey . '=' . $strValue . '&';
+                        }
+                        $params = rtrim($url, '&');
+                        $url .= '?' . $params;
                         break;
                     case self::REQUEST_TYPE_POST:
                         curl_setopt($chs[$nIndex], CURLOPT_POST, true);
