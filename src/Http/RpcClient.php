@@ -16,7 +16,7 @@ use Nos\Comm\Config;
 class RpcClient
 {
 
-    private $serviceUrl;
+    private $host;
 
     private $serviceName;
 
@@ -40,9 +40,11 @@ class RpcClient
                 throw new CoreException('rpc|ini_is_empty');
             }
             $rpcInstance = new self();
-            $rpcInstance->serviceUrl  = $config[$serviceName]['host'];
-            $rpcInstance->appId       = $config[$serviceName]['appId'];
-            $rpcInstance->accessToken = $config[$serviceName]['accessToken'];
+            $rpcParams = $config[$serviceName];
+            // host/appId/accessToken等配置信息赋值
+            foreach ($rpcParams as $key => $value) {
+                $rpcInstance->$key = $value;
+            }
             $rpcInstance->serviceName = $serviceName;
             Pool::set($serviceName, $rpcInstance);
         }
@@ -60,10 +62,10 @@ class RpcClient
      */
     public function send(string $reqType, string $actionName, array $params)
     {
-        $params['appId'] = $this->appId;
+        $params['appId'] = $this->appId; // TODO 待优化字段可定制，而非写死的appId等值
         $params['accessToken'] = $this->accessToken;
         $params['timestamp'] = time();
-        $url = $this->serviceUrl . '/' . $actionName;
+        $url = $this->host . '/' . $actionName;
         return Request::send($reqType, $url, $params);
     }
 
