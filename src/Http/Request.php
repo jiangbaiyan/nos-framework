@@ -172,7 +172,7 @@ class Request
             throw new CoreException('curl|wrong_params_type|url:' . $url . '|reqType:' . $reqType . '|paramsType:' . $paramsType . '|$params:' .json_encode($params));
         }
         try {
-            $ch = curl_init($url);
+            $ch = curl_init();
             // 初始化选项
             curl_setopt_array($ch, [
                 CURLOPT_RETURNTRANSFER => true,
@@ -200,20 +200,24 @@ class Request
             }
             // 判断并设置请求类型
             switch ($reqType) {
-                case 'POST':
+                case self::REQUEST_TYPE_GET:
+                    $url .= '?' . http_build_query($params);
+                    break;
+                case self::REQUEST_TYPE_POST:
                     curl_setopt($ch, CURLOPT_POST, true);
                     curl_setopt($ch, CURLOPT_POSTFIELDS, $params);
                     break;
-                case 'PUT':
-                case 'DELETE':
+                case self::REQUEST_TYPE_PUT:
+                case self::REQUEST_TYPE_DELETE:
                     curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $reqType);
                     curl_setopt($ch, CURLOPT_POSTFIELDS, $params);
                     break;
             }
+            curl_setopt($ch, CURLOPT_URL, $url);
             // 发送请求
             $res = curl_exec($ch);
             if (empty($res)){
-                for ($i = 0;$i<$retry;$i++){
+                for ($i = 0; $i < $retry; $i++){
                     $res = curl_exec($ch);
                     if (!empty($res)){
                         break;
@@ -230,58 +234,63 @@ class Request
         }
     }
 
+
     /**
      * 并行请求接口
      * 实例：
      * $data = [
-                    'appId' => 'uc_all',
-                    'accessToken' => 111,
-                    'timestamp'   => 111,
-                    'email' => "123122133@qq.com",
-                    'password' => "123www"
-                ];
-                $connomains = [
-                     [
-                        'path'   => '/unified/register',
-                        'params' => $data
-                    ]
-                ];
+     *     'appId' => 'uc_all',
+     *     'accessToken' => 111,
+     *     'timestamp'   => 111,
+     *     'email' => "123122133@qq.com",
+     *     'password' => "123www"
+     * ];
+     *
+     * $requestParams = [
+     *     [
+     *         'url'   => 'http://baidu.com/unified/register',
+     *         'params' => $data
+     *     ]
+     * ];
      * $serviceUrl = "http://www.baidu.com";
-     * @param array $connomains
-     * @param string $serviceUrl
-     * @param int $post
+     * @param array $params
+     * @param string $url
+     * @param string $reqType
      * @return array
      * @throws CoreException
      */
-    public static function sendMulti(array $connomains, string $serviceUrl, int $post)
+    public static function sendMulti(string $reqType, string $url, array $params)
     {
         try {
+            $chs = [];
+            $res = [];
             $handler = curl_multi_init();
-            foreach ($connomains as $i => $value) {
-                $conn[$i] = curl_init($serviceUrl . '/' . $value['path']);
-                if ($post === 0 && !empty($value['params'])) {
-                    $str = '';
-                    foreach ($value['params'] as $k => $val) {
-                        $str = $str . $k . '=' . $val . '&';
-                    }
-                    $str = trim($str, '&');
-                    $conn[$i] = curl_init($serviceUrl . '/' . $value['path'] . '?' . $str);
-                } else {
-                    $conn[$i] = curl_init($serviceUrl . '/' . $value['path']);
+            foreach ($params as $nIndex => $value) {
+                $chs[$nIndex] = curl_init();
+                curl_setopt($chs[$nIndex], CURLOPT_RETURNTRANSFER, 1);
+                switch ($reqType) {
+                    case self::REQUEST_TYPE_GET:
+                        $url .= '?' . http_build_query($value['params']);
+                        break;
+                    case self::REQUEST_TYPE_POST:
+                        curl_setopt($chs[$nIndex], CURLOPT_POST, true);
+                        curl_setopt($chs[$nIndex], CURLOPT_POSTFIELDS, $value['params']);
+                        break;
+                    case self::REQUEST_TYPE_PUT:
+                    case self::REQUEST_TYPE_DELETE:
+                        curl_setopt($chs[$nIndex], CURLOPT_CUSTOMREQUEST, $reqType);
+                        curl_setopt($chs[$nIndex], CURLOPT_POSTFIELDS, $value['params']);
+                        break;
                 }
-                curl_setopt($conn[$i], CURLOPT_RETURNTRANSFER, 1);
-                if ($post === 1) {
-                    curl_setopt($conn[$i], CURLOPT_POST, 1);
-                    curl_setopt($conn[$i], CURLOPT_POSTFIELDS, $value['params']);
-                }
-
-                curl_multi_add_handle($handler, $conn[$i]);
+                curl_setopt($chs[$nIndex], CURLOPT_URL, $url);
+                curl_multi_add_handle($handler, $chs[$nIndex]);
             }
 
             $active = null;
             do {
                 $result = curl_multi_exec($handler, $active);
             } while ($result == CURLM_CALL_MULTI_PERFORM);
+
             while ($active and $result == CURLM_OK) {
                 if (curl_multi_select($handler) != -1) {
                     do {
@@ -290,28 +299,21 @@ class Request
                 }
             }
 
-            foreach ($connomains as $i => $url) {
+            foreach ($params as $nIndex => $url) {
 
                 //获取curl获取到的内容
-                $res[$i] = curl_multi_getcontent($conn[$i]);
+                $res[$nIndex] = curl_multi_getcontent($chs[$nIndex]);
 
-                curl_close($conn[$i]);
+                curl_close($chs[$nIndex]);
 
-                curl_multi_remove_handle($handler, $conn[$i]);
+                curl_multi_remove_handle($handler, $chs[$nIndex]);
             }
+
             curl_multi_close($handler);
-        } catch (\Exception $e) {
-            throw new CoreException('curl|send_request_error|paramsType:' . $post . '|$params:' . json_encode($connomains) . '|curl_exception:' . $e->getMessage() . '|curl_error:' . curl_error($handler));
-        }
-        $info = [];
-        foreach ($res as $val) {
-            $val = json_decode($val, true);
-            if ($val['status'] !== 200) {
-                throw new CoreException('curl|send_request_error|' . $val['msg']);
-            }
-            $info[] = $val['data'];
-        }
 
-        return !empty($info) ? $info : [];
+            return $res;
+        } catch (\Exception $e) {
+            throw new CoreException('curl|send_request_error|paramsType:' . $reqType . '|$params:' . json_encode($requestParams) . '|curl_exception:' . $e->getMessage() . '|curl_error:' . curl_error($handler));
+        }
     }
 }
