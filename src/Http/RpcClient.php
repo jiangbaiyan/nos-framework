@@ -1,7 +1,15 @@
 <?php
+/**
+ * RPC客户端
+ * Created by PhpStorm.
+ * User: nos
+ * Date: 2019-10-31
+ * Time: 10:31
+ */
 
 namespace Nos\Http;
 
+use Nos\Comm\Pool;
 use Nos\Exception\CoreException;
 use Nos\Comm\Config;
 
@@ -17,24 +25,36 @@ class RpcClient
     private $accessToken;
 
 
-    public function __construct($serviceName)
+    /**
+     * 单例获取RPC实例
+     * @param string $serviceName
+     * @return array|mixed|RpcClient
+     * @throws CoreException
+     */
+    public static function getInstance(string $serviceName)
     {
-        $config = Config::get('rpc.ini');
-        if (!isset($config[$serviceName])) {
-            throw new CoreException('rpc|ini_is_empty');
+        $rpcInstance = Pool::get($serviceName);
+        if (empty($rpcInstance)) {
+            $config = Config::get('rpc.ini');
+            if (!isset($config[$serviceName])) {
+                throw new CoreException('rpc|ini_is_empty');
+            }
+            $rpcInstance = new self();
+            $rpcInstance->serviceUrl  = $config[$serviceName]['host'];
+            $rpcInstance->appId       = $config[$serviceName]['appId'];
+            $rpcInstance->accessToken = $config[$serviceName]['accessToken'];
+            $rpcInstance->serviceName = $serviceName;
+            Pool::set($serviceName, $rpcInstance);
         }
-        $this->serviceUrl  = $config[$serviceName]['host'];
-        $this->appId       = $config[$serviceName]['appId'];
-        $this->accessToken = $config[$serviceName]['accessToken'];
-        $this->serviceName = $serviceName;
+        return $rpcInstance;
     }
 
 
     /**
-     * rpc调用
-     * @param $actionName
-     * @param $params
-     * @param $reqType
+     * RPC调用
+     * @param string $reqType 请求类型
+     * @param string $actionName 动作名称
+     * @param array $params 请求参数
      * @return bool|string
      * @throws CoreException
      */
