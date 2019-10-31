@@ -18,7 +18,7 @@ class Request
 
     const PARAMS_TYPE_URLENCODED = 1; // QUERY_STRING形式提交参数
     const PARAMS_TYPE_JSON       = 2; // 请求体携带JSON形式提交参数
-    const PARAMS_TYPE_COMMON     = 3; // 通用形式提交参数(http_build_query)
+    const PARAMS_TYPE_COMMON     = 3; // 通用形式提交参数（参数不作处理）
 
 
     const REQUEST_TYPE_GET       = 'GET';    // GET请求
@@ -184,30 +184,32 @@ class Request
             if (!empty($options)){
                 curl_setopt_array($ch, $options);
             }
+            $strQuery = '';
             // 判断请求参数携带类型并设置请求参数
-            switch ($paramsType) {
-                case self::PARAMS_TYPE_URLENCODED:
-                    $params = '';
-                    foreach ($params as $strKey => $strValue) {
-                        $params .= $strKey . '=' . $strValue . '&';
-                    }
-                    $params = rtrim($url, '&');
-                    break;
-                case self::PARAMS_TYPE_JSON:
-                    $params = json_encode($params);
-                    curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            if (!empty($params)) {
+                switch ($paramsType) {
+                    case self::PARAMS_TYPE_URLENCODED:
+                        $strQuery = '?';
+                        foreach ($params as $strKey => $strValue) {
+                            $strQuery .= $strKey . '=' . $strValue . '&';
+                        }
+                        $strQuery = rtrim($strQuery, '&');
+                        break;
+                    case self::PARAMS_TYPE_JSON:
+                        $params = json_encode($params);
+                        curl_setopt($ch, CURLOPT_HTTPHEADER, [
                             'Content-Type: application/json; charset=utf-8',
                             'Content-Length: ' . strlen($params)
-                    ]);
-                    break;
-                case self::PARAMS_TYPE_COMMON:
-                    $params = http_build_query($params);
-                    break;
+                        ]);
+                        break;
+                    case self::PARAMS_TYPE_COMMON:
+                        break;
+                }
             }
             // 判断并设置请求类型
             switch ($reqType) {
                 case self::REQUEST_TYPE_GET:
-                    $url .= '?' . $params;
+                    $url .= $strQuery;
                     curl_setopt($ch, CURLOPT_URL, $url);
                     break;
                 case self::REQUEST_TYPE_POST:
@@ -220,7 +222,7 @@ class Request
                     curl_setopt($ch, CURLOPT_POSTFIELDS, $params);
                     break;
             }
-            // 发送请求
+            // 发送请求，重试3次
             $res = curl_exec($ch);
             if (empty($res)){
                 for ($i = 0; $i < $retry; $i++){
@@ -276,12 +278,12 @@ class Request
                 curl_setopt($chs[$nIndex], CURLOPT_RETURNTRANSFER, 1);
                 switch ($reqType) {
                     case self::REQUEST_TYPE_GET:
-                        $params = '';
+                        $strQuery = '?';
                         foreach ($params as $strKey => $strValue) {
-                            $params .= $strKey . '=' . $strValue . '&';
+                            $strQuery .= $strKey . '=' . $strValue . '&';
                         }
-                        $params = rtrim($url, '&');
-                        $url .= '?' . $params;
+                        $strQuery = rtrim($strQuery, '&');
+                        $url .= $strQuery;
                         break;
                     case self::REQUEST_TYPE_POST:
                         curl_setopt($chs[$nIndex], CURLOPT_POST, true);
