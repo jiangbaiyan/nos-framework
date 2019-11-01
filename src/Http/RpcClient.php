@@ -64,7 +64,7 @@ class RpcClient
             $params[$property] = $value;
         }
         $url = $this->host . '/' . $actionName;
-        return ApiClient::send($reqType, $url, $params);
+        return !empty(ApiClient::send($reqType, $url, $params)) ? json_decode(ApiClient::send($reqType, $url, $params), true) : [];
     }
 
 }
