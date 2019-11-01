@@ -35,7 +35,7 @@ class RpcClient
         if (empty($rpcInstance)) {
             $config = Config::get('rpc.ini');
             if (!isset($config[$serviceName])) {
-                throw new CoreException('rpc|ini_is_empty');
+                throw new CoreException('rpc|rpc_ini_is_empty');
             }
             $rpcInstance = new self();
             $rpcParams = $config[$serviceName];
@@ -64,7 +64,7 @@ class RpcClient
             $params[$property] = $value;
         }
         $url = $this->host . '/' . $actionName;
-        return Request::send($reqType, $url, $params);
+        return ApiClient::send($reqType, $url, $params);
     }
 
 }
