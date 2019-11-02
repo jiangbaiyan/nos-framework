@@ -92,4 +92,34 @@ class Db
             throw new CoreException('db|connect_failed|msg:' . $e->getMessage() . '|config:' . json_encode($config));
         }
     }
+
+    /**
+     * 事务开始
+     * @throws CoreException
+     */
+    public static function beginTransaction()
+    {
+        $dbInstance = self::getInstance(self::DB_NODE_MASTER_KEY);
+        $dbInstance->begin();
+    }
+
+    /**
+     * 事务提交
+     * @throws CoreException
+     */
+    public static function commit()
+    {
+        $dbInstance = self::getInstance(self::DB_NODE_MASTER_KEY);
+        $dbInstance->commit();
+    }
+
+    /**
+     * 事务回滚
+     * @throws CoreException
+     */
+    public static function rollback()
+    {
+        $dbInstance = self::getInstance(self::DB_NODE_MASTER_KEY);
+        $dbInstance->rollback();
+    }
 }
