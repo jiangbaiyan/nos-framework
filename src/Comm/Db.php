@@ -35,11 +35,13 @@ class Db
             $dbInstance->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
             $handle = $dbInstance->prepare($sql);
             if (!$handle) {
-                throw new CoreException(json_encode($dbInstance->errorInfo()));
+                $errorInfo = $dbInstance->errorInfo();
+                throw new CoreException("SQLSTATE[{$errorInfo[0]}][$errorInfo[1]] {$errorInfo[2]}");
             }
             $res = $handle->execute($bind);
             if (!$res){
-                throw new CoreException(json_encode($handle->errorInfo()));
+                $errorInfo = $handle->errorInfo();
+                throw new CoreException("SQLSTATE[{$errorInfo[0]}][$errorInfo[1]] {$errorInfo[2]}");
             }
             // 获取影响行数
             $count = $handle->rowcount();
