@@ -34,6 +34,9 @@ class Db
             $dbInstance = self::getInstance($node);
             $dbInstance->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
             $handle = $dbInstance->prepare($sql);
+            if (!$handle) {
+                throw new CoreException(json_encode($dbInstance->errorInfo()));
+            }
             $res = $handle->execute($bind);
             if (!$res){
                 throw new CoreException(json_encode($handle->errorInfo()));
@@ -50,7 +53,7 @@ class Db
             } else {
                 return $handle->fetchAll(PDO::FETCH_ASSOC); // 结果集不为空，取出数据
             }
-        } catch (\Exception $e){
+        } catch (\Throwable $e){
             throw new CoreException('db|pdo_do_sql_failed|msg:' .  $e->getMessage() . '|sql:' . $sql . '|node:' . $node . '|bind:' . json_encode($bind));
         }
     }
@@ -88,7 +91,7 @@ class Db
                 Pool::set($connPoolKey, $dbInstance);
             }
             return $dbInstance;
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             throw new CoreException('db|connect_failed|msg:' . $e->getMessage() . '|config:' . json_encode($config));
         }
     }
