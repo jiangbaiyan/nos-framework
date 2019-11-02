@@ -26,7 +26,7 @@ class Config
         if (empty($poolData)) {
             $configPath = APP_PATH . "/config/{$path}";
             if (!is_file($configPath)) {
-                throw new CoreException("配置文件:{$configPath}不存在");
+                throw new CoreException("config|config_file:{$configPath}_not_exist");
             }
             $config = new Ini($configPath, ini_get('yaf.environ'));
             $poolData = Pool::set($path, $config->toArray());
