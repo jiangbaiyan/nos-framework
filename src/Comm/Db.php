@@ -100,7 +100,7 @@ class Db
     public static function beginTransaction()
     {
         $dbInstance = self::getInstance(self::DB_NODE_MASTER_KEY);
-        $dbInstance->begin();
+        $dbInstance->beginTransaction();
     }
 
     /**
