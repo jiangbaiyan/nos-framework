@@ -64,7 +64,13 @@ class RpcClient
             $params[$property] = $value;
         }
         $url = $this->host . '/' . $actionName;
-        return !empty(ApiClient::send($reqType, $url, $params)) ? json_decode(ApiClient::send($reqType, $url, $params), true) : [];
+        $res = ApiClient::send($reqType, $url, $params);
+        // 假设RPC通信返回的是json
+        if (!empty($res) && is_string($res)) {
+            return json_decode($res, true);
+        } else {
+            return $res;
+        }
     }
 
 }
