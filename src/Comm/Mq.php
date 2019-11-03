@@ -33,7 +33,7 @@ class Mq
                 Log::notice('mq|push_mq_success|data:' . json_encode($data) . '|key:' . $key);
                 return true;
             }
-        } catch (\Exception $e){
+        } catch (\Throwable $e){
             throw new CoreException('mq|push_mq_failed|msg:' . json_encode($e->getMessage()) . '|key:' . $key . '|data:' . json_encode($data));
         }
         return false;
@@ -57,7 +57,7 @@ class Mq
                 Log::notice('mq|mq_pop_success|data:' . json_encode($data) . '|key:' . $key);
                 return $data;
             }
-        } catch (\Exception $e){
+        } catch (\Throwable $e){
             throw new CoreException('mq|pop_mq_failed|msg:' . json_encode($e->getMessage()) . '|key:' . $key);
         }
         return false;

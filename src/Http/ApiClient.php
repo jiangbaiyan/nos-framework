@@ -125,7 +125,7 @@ class ApiClient
             }
             curl_close($ch);
             return $res;
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             throw new CoreException('curl|send_request_error|url:' . $url . '|reqType:' . $reqType . '|paramsType:' . $paramsType . '|$params:' . json_encode($params) . '|retry:' . $retry . '|curl_exception:' . $e->getMessage() . '|curl_error:' . curl_error($ch));
         }
     }
@@ -213,7 +213,7 @@ class ApiClient
             curl_multi_close($handler);
 
             return $res;
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             throw new CoreException('curl|send_request_error|paramsType:' . $reqType . '|$params:' . json_encode($requestParams) . '|curl_exception:' . $e->getMessage() . '|curl_error:' . curl_error($handler));
         }
     }

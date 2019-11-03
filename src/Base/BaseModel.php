@@ -42,43 +42,7 @@ class BaseModel extends Db
         '=', '>', '<', '>=', '<=', '!=', 'like', 'in'
     ];
 
-    /**
-     * @var bool $isTransacting 是否开启事务
-     */
-    private static $isTransacting = false;
 
-    /**
-     * 事务开始
-     * @throws CoreException
-     */
-    public static function beginTransaction()
-    {
-        $dbInstance = self::getInstance(self::DB_NODE_MASTER_KEY);
-        $dbInstance->begin();
-        self::$isTransacting = true;
-    }
-
-    /**
-     * 事务提交
-     * @throws CoreException
-     */
-    public static function commit()
-    {
-        $dbInstance = self::getInstance(self::DB_NODE_MASTER_KEY);
-        $dbInstance->commit();
-        self::$isTransacting = false;
-    }
-
-    /**
-     * 事务回滚
-     * @throws CoreException
-     */
-    public static function rollback()
-    {
-        $dbInstance = self::getInstance(self::DB_NODE_MASTER_KEY);
-        $dbInstance->rollback();
-        self::$isTransacting = false;
-    }
 
     /**
      * 单条插入
