@@ -1,8 +1,8 @@
 # Nos—基于Yaf && 专注于接口开发的PHP框架
-<a href="https://packagist.org/packages/jiangbaiyan/nos"><img src="https://poser.pugx.org/jiangbaiyan/nos/v/stable" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/jiangbaiyan/nos"><img src="https://poser.pugx.org/jiangbaiyan/nos/downloads" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/jiangbaiyan/nos"><img src="https://poser.pugx.org/jiangbaiyan/nos/v/unstable" alt="Latest Unstable Version"></a>
-<a href="https://packagist.org/packages/jiangbaiyan/nos"><img src="https://poser.pugx.org/jiangbaiyan/nos/license" alt="License"></a>
+<a href="https://packagist.org/packages/jiangbaiyan/nos"><img src="https://poser.pugx.org/jiangbaiyan/nos-framework/v/stable" alt="Latest Stable Version"></a>
+<a href="https://packagist.org/packages/jiangbaiyan/nos"><img src="https://poser.pugx.org/jiangbaiyan/nos-framework/downloads" alt="Total Downloads"></a>
+<a href="https://packagist.org/packages/jiangbaiyan/nos"><img src="https://poser.pugx.org/jiangbaiyan/nos-framework/v/unstable" alt="Latest Unstable Version"></a>
+<a href="https://packagist.org/packages/jiangbaiyan/nos"><img src="https://poser.pugx.org/jiangbaiyan/nos-framework/license" alt="License"></a>
 ### 在yaf框架基础上为中小型接口开发业务场景做了适配
 ## 安装
  - 支持composer直接安装，命令行执行：composer create-project --prefer-dist jiangbaiyan/nos
