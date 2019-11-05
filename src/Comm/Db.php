@@ -34,9 +34,14 @@ class Db
             $dbInstance = self::getInstance($node);
             $dbInstance->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
             $handle = $dbInstance->prepare($sql);
+            if (!$handle) {
+                $errorInfo = $dbInstance->errorInfo();
+                throw new CoreException("SQLSTATE[{$errorInfo[0]}][$errorInfo[1]] {$errorInfo[2]}");
+            }
             $res = $handle->execute($bind);
             if (!$res){
-                throw new CoreException(json_encode($handle->errorInfo()));
+                $errorInfo = $handle->errorInfo();
+                throw new CoreException("SQLSTATE[{$errorInfo[0]}][$errorInfo[1]] {$errorInfo[2]}");
             }
             // 获取影响行数
             $count = $handle->rowcount();
@@ -50,7 +55,7 @@ class Db
             } else {
                 return $handle->fetchAll(PDO::FETCH_ASSOC); // 结果集不为空，取出数据
             }
-        } catch (\Exception $e){
+        } catch (\Throwable $e){
             throw new CoreException('db|pdo_do_sql_failed|msg:' .  $e->getMessage() . '|sql:' . $sql . '|node:' . $node . '|bind:' . json_encode($bind));
         }
     }
@@ -88,8 +93,38 @@ class Db
                 Pool::set($connPoolKey, $dbInstance);
             }
             return $dbInstance;
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             throw new CoreException('db|connect_failed|msg:' . $e->getMessage() . '|config:' . json_encode($config));
         }
+    }
+
+    /**
+     * 事务开始
+     * @throws CoreException
+     */
+    public static function beginTransaction()
+    {
+        $dbInstance = self::getInstance(self::DB_NODE_MASTER_KEY);
+        $dbInstance->beginTransaction();
+    }
+
+    /**
+     * 事务提交
+     * @throws CoreException
+     */
+    public static function commit()
+    {
+        $dbInstance = self::getInstance(self::DB_NODE_MASTER_KEY);
+        $dbInstance->commit();
+    }
+
+    /**
+     * 事务回滚
+     * @throws CoreException
+     */
+    public static function rollback()
+    {
+        $dbInstance = self::getInstance(self::DB_NODE_MASTER_KEY);
+        $dbInstance->rollback();
     }
 }
