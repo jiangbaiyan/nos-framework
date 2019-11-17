@@ -24,10 +24,11 @@ class Db
      * @param string $node 数据库节点
      * @param string $sql SQL语句
      * @param array $bind 参数绑定
+     * @param bool $lastInsertId 是否返回执行SQL后的记录id
      * @return mixed
      * @throws CoreException
      */
-    public static function doSql(string $node, string $sql, array $bind = [])
+    public static function doSql(string $node, string $sql, array $bind = [], bool $lastInsertId = false)
     {
         try{
             // 从连接池拿出数据库实例
@@ -40,8 +41,11 @@ class Db
             }
             $res = $handle->execute($bind);
             if (!$res){
-                $errorInfo = $handle->errorInfo();
+                $errorInfo = $dbInstance->errorInfo();
                 throw new CoreException("SQLSTATE[{$errorInfo[0]}][$errorInfo[1]] {$errorInfo[2]}");
+            }
+            if ($lastInsertId) {
+                return $dbInstance->lastInsertId();
             }
             // 获取影响行数
             $count = $handle->rowcount();
