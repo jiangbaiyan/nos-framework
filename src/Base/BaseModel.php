@@ -52,7 +52,7 @@ class BaseModel extends Db
      *     'name' => '苍老师',
      *     'age' => 10
      * ]
-     * @return int 影响行数
+     * @return int 插入后的记录id
      * @throws CoreException
      */
     public static function insert(array $row)
@@ -65,22 +65,9 @@ class BaseModel extends Db
             return ':' . $v;
         }, $fields);
 
-        $sql        = 'insert into `' . static::$table . '` (`' . implode('`,`', $fields) . '`) values (' . implode(',', $bindFields) . ')';
+        $sql = 'insert into `' . static::$table . '` (`' . implode('`,`', $fields) . '`) values (' . implode(',', $bindFields) . ')';
 
-        return self::doSql(self::DB_NODE_MASTER_KEY, $sql, $row);
-    }
-
-    /**
-     * 插入并返回插入后的id
-     * @param array $row 插入数据的一维数组
-     * @return int 插入后的id
-     * @throws CoreException
-     */
-    public static function insertGetId(array $row)
-    {
-        self::insert($row);
-        $sql = 'SELECT LAST_INSERT_ID()';
-        return self::doSql(self::DB_NODE_MASTER_KEY, $sql);
+        return self::doSql(self::DB_NODE_MASTER_KEY, $sql, $row, true);
     }
 
     /**
@@ -194,22 +181,35 @@ class BaseModel extends Db
         }
         $fieldStr = '`' . implode('`,`', $fields) . '`';
         $sql = 'select ' . $fieldStr . ' from `' . static::$table . '`';
+        $countSql = 'select ' . 'count(*) as count' . ' from `' . static::$table . '`';
         if (!empty($where['where'])) {
-            $sql .= ' where ' . $where['where'];
+            $sql      .= ' where ' . $where['where'];
+            $countSql .= ' where ' . $where['where'];
+        }
+        $count = self::doSql(self::DB_NODE_SLAVE_KEY, $countSql, $where['bind'])[0]['count'];
+        if ($count == 0) {
+            return [
+                'total'  => 0,
+                'data'   => []
+            ];
         }
         if (!empty($optionSql)) {
             $sql .= ' ' . $optionSql;
         }
-        $data = self::doSql(self::DB_NODE_SLAVE_KEY, $sql, $where['bind']);
+        $data  = self::doSql(self::DB_NODE_SLAVE_KEY, $sql, $where['bind']);
         // 如果有分页参数，返回分页参数
         if (!empty($otherOption['page']) && !empty($otherOption['length'])) {
             return [
                 'page'   => $otherOption['page'],
                 'length' => $otherOption['length'],
+                'total'  => $count,
                 'data'   => $data
             ];
         } else {
-            return $data;
+            return [
+                'total'  => $count,
+                'data'   => $data
+            ];
         }
     }
 
