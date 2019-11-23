@@ -269,7 +269,7 @@ class BaseModel extends Db
      */
     public static function prepareWhere(array $condition, bool $withTrashed = false)
     {
-        if (empty($condition)) {
+        if (empty($condition) && $withTrashed) {
             return [
                 'where' => '',
                 'bind' => []
