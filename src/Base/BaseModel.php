@@ -168,19 +168,14 @@ class BaseModel extends Db
      * @return array 数据
      * @throws CoreException
      */
-    public static function select(array $fields = [], array $where = [], array $otherOption = [], bool $withTrashed = false)
+    public static function select(array $fields = ['*'], array $where = [], array $otherOption = [], bool $withTrashed = false)
     {
         $where = self::prepareWhere($where, $withTrashed);
         if (!empty($otherOption)) {
             $optionSql = self::prepareOption($otherOption);
         }
-        if (empty($fields)) {
-            $fields = ['*'];
-        } else {
-            $fields = array_unique($fields);
-        }
         $fieldStr = '`' . implode('`,`', $fields) . '`';
-        $sql = 'select ' . $fieldStr . ' from `' . static::$table . '`';
+        $sql      = 'select ' . $fieldStr . ' from `' . static::$table . '`';
         $countSql = 'select ' . 'count(*) as count' . ' from `' . static::$table . '`';
         if (!empty($where['where'])) {
             $sql      .= ' where ' . $where['where'];
@@ -193,9 +188,7 @@ class BaseModel extends Db
                 'data'   => []
             ];
         }
-        if (!empty($optionSql)) {
-            $sql .= ' ' . $optionSql;
-        }
+        !empty($optionSql) && $sql .= ' ' . $optionSql;
         $data  = self::doSql(self::DB_NODE_SLAVE_KEY, $sql, $where['bind']);
         // 如果有分页参数，返回分页参数
         if (!empty($otherOption['page']) && !empty($otherOption['length'])) {
@@ -233,7 +226,6 @@ class BaseModel extends Db
             throw new CoreException('baseModel|empty_update_where');
         }
         $where = self::prepareWhere($where, $withTrashed);
-        $params = array_unique($params);
         $sql = 'update `' . static::$table . '` set ';
         $bind = [];
         // 组装sql与绑定参数
