@@ -67,16 +67,6 @@ class Validator
 
 
     /**
-     * 必填验证
-     * @param $v
-     * @return bool
-     */
-    private static function required($v)
-    {
-        return isset($v);
-    }
-
-    /**
      * 手机号验证
      * @param $v
      * @return bool
