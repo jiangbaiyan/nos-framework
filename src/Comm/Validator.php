@@ -29,10 +29,15 @@ class Validator
             if (!isset($params[$field]) && strpos($rule, 'required') === false) {
                 continue;
             }
+            // required规则特殊处理
+            if (!isset($params[$field]) && strpos($rule, 'required') !== false ) {
+                throw new ParamValidateFailedException("参数:{$field}必填");
+            }
+            // 处理其他规则
             $ruleArr = explode('|', $rule);
             foreach ($ruleArr as $ruleItem) {
                 // 验证规则为空，进行下一条验证
-                if (empty($ruleItem)) {
+                if (empty($ruleItem) || $ruleItem == 'required') {
                     continue;
                 }
                 // 如果在本类定义了内置验证方法，直接调用。如果没定义，那么继续尝试is_int/is_numeric等PHP内置方法，否则报错
@@ -53,7 +58,7 @@ class Validator
                     throw new CoreException("validator|rule_undefined|rule:{$ruleItem}");
                 }
                 if ($ret === false) { // 校验失败收口统一报错
-                    throw new ParamValidateFailedException("参数{$field}:{$params[$field]}不符合校验规则{$ruleItem}");
+                    throw new ParamValidateFailedException("validator|field:{$field}:{$params[$field]}_not_comply_with_rule:{$ruleItem}");
                 }
             }
         }
