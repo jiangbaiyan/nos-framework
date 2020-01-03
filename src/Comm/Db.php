@@ -87,7 +87,7 @@ class Db
                 $config['database'] = static::$database;
             }
             // PDO连接
-            $dsn = "mysql:host={$config['host']};port={$config['port']};dbname={$config['database']}";
+            $dsn = "mysql:host={$config['host']};port={$config['port']};dbname={$config['database']};charset=utf8";
             // 这几个参数唯一确定连接池的key
             $connPoolKey = $dsn . $config['user'] . $config['password'];
             // 连接池中不存在，需要重新往连接池中添加
